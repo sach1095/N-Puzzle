@@ -32,3 +32,6 @@
 *.app
 N-Puzzle
 setting.json
+.vscode
+package.json
+package-lock.json
