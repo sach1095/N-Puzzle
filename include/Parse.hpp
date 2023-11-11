@@ -3,21 +3,26 @@
 
 #include <queue>
 #include <vector>
+#include <sstream>
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+#include <set>
 
 class ParseFile {
 private:
 	std::queue<std::string> _content;
-	std::vector<std::string> _parsedContent;
+	std::vector<std::vector<int>> _parsedContent;
 
 public:
 
 	ParseFile(const std::string& fileName);
-	void setContent(std::queue<std::string>&& content);
-	const std::vector<std::string>& getParsedContent() const;
-	const std::queue<std::string>& getContent() const;
+	const std::vector<std::vector<int>>& getParsedContent() const;
 	void readInputFile(const std::string& fileName);
+	void parseContent();
+	void showParsedContent();
+	void checkWholeSequence() const;
+	void checkSize();
 };
 
 #endif

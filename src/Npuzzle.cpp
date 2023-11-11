@@ -5,6 +5,7 @@ int main(int ac, char **av)
 {
 	try
 	{
+		//TODO Handle random generated map usage
 		if (ac != 2)
 			throw CustomError("Usage: ./Npuzzle [Path to map file]");
 		ParseFile parser(av[1]);
