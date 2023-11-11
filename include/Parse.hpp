@@ -20,9 +20,9 @@ public:
 	const std::vector<std::vector<int>>& getParsedContent() const;
 	void readInputFile(const std::string& fileName);
 	void parseContent();
-	void afficherParsedContent();
-	void verifierSequenceComplete() const;
-	void verifierTaille();
+	void showParsedContent();
+	void checkWholeSequence() const;
+	void checkSize();
 };
 
 #endif
