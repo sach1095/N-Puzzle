@@ -28,6 +28,7 @@ PATH_OBJ	=	obj
 
 # Source
 SRC		=	$(addprefix $(PATH_SRC)/, \
+			Heuristics.cpp	\
 			Npuzzle.cpp		\
 			Parse.cpp		\
 			Puzzle.cpp		\
