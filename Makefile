@@ -30,6 +30,7 @@ PATH_OBJ	=	obj
 SRC		=	$(addprefix $(PATH_SRC)/, \
 			Npuzzle.cpp		\
 			Parse.cpp		\
+			Puzzle.cpp		\
 			)
 
 OBJ		=	$(addprefix $(PATH_OBJ)/, $(SRC:.cpp=.o))
