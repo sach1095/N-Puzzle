@@ -60,7 +60,7 @@ fclean	:	clean
 re		:	fclean all
 
 run : all
-	@ ./$(NAME) maps/valids/3x3/3x3_comment_inline.txt
+	@ ./$(NAME) maps/valids/25x25.txt
 
 help	:
 	@ printf "How run Npuzzle : \n\n"

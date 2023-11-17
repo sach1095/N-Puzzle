@@ -49,7 +49,7 @@ void ParseFile::parseContent() {
         for (const auto& token : tokens) {
             if (!token.empty() && token[0] == '#')
                 break;
-            else if (std::all_of(token.begin(), token.end(), ::isdigit))
+            else if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit))
                 lineOfNumber.push_back(std::stoi(token));
             else if (!token.empty())
                 throw CustomError("Error: unknown token '" + token + "' in the file.");
