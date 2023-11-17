@@ -28,8 +28,11 @@ PATH_OBJ	=	obj
 
 # Source
 SRC		=	$(addprefix $(PATH_SRC)/, \
+			SearchAlgo.cpp	\
+			Heuristics.cpp	\
 			Npuzzle.cpp		\
 			Parse.cpp		\
+			Puzzle.cpp		\
 			)
 
 OBJ		=	$(addprefix $(PATH_OBJ)/, $(SRC:.cpp=.o))
@@ -60,7 +63,7 @@ fclean	:	clean
 re		:	fclean all
 
 run : all
-	@ ./$(NAME) maps/valids/25x25.txt
+	@ ./$(NAME) maps/valids/3x3/solvable.txt
 
 help	:
 	@ printf "How run Npuzzle : \n\n"
