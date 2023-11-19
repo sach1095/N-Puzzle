@@ -28,7 +28,7 @@ class SearchAlgo
 public:
     SearchAlgo() = delete;
     SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-               std::vector<std::vector<int>> initContent);
+               std::vector<int> puzzleNumbers, size_t size_line);
 
     // TODO FUNCTIONS
     bool Solve();
@@ -48,9 +48,6 @@ private:
     size_t 						MaxSizeOpenedSet = 0;
 };
 
-
-// Helper functions
-std::vector<int> flatten(const std::vector<std::vector<int>>& vecOfVec);
 
 // TODO FUNCTIONS
 std::vector<Puzzle> GetNeighbors(const Puzzle& puzzle);

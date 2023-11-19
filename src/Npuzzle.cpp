@@ -11,14 +11,13 @@ int main(int ac, char **av)
 {
 	try
 	{
-		if (ac != 2)
-			throw CustomError("Usage: ./Npuzzle [Path to map file]");
-		ParseFile parser(av[1]);
-		const std::vector<std::vector<int>>& parsedContent = parser.getParsedContent();
+		if (ac == 1)
+			throw CustomError("Error: no argments given.");
+		ParseFile parser(av);
+		const std::vector<int>& parsedContent = parser.getParsedContent();
 		if (parsedContent.size() > 10)
 			throw CustomError("For now size > 10 is not handled");
-
-        auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent);
+		auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent, parser.getSizeline());
 	}
 	catch(const CustomError& e)
 	{
