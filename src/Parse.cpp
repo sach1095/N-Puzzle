@@ -186,13 +186,13 @@ void ParseFile::ParseAV(char **av){
 			try
 			{
 				int temp = std::stoi(args.front());
-				if (temp < 2)
+				if (temp <= 2)
 					throw CustomError("");
 				this->_sizeLine = static_cast<size_t>(temp);
 				args.pop();
 			}
 			catch(const std::exception& e){
-				throw CustomError("Error: Bad argument for --size, " + args.front() + ".");
+				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value need to be a number and big than 2.");
 			}
 		}
 		else if (args.front() == "--solvable"){
