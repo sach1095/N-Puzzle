@@ -14,38 +14,38 @@
 template <>
 struct std::hash<Puzzle>
 {
-    std::size_t operator()(const Puzzle& puzzle) const noexcept
-    {
-        size_t hash = 0;
-        for (int nb : puzzle.GetNumbers())
-            hash = nb ^ (hash << 1);
-        return hash;
-    }
+	std::size_t operator()(const Puzzle& puzzle) const noexcept
+	{
+		size_t hash = 0;
+		for (int nb : puzzle.GetNumbers())
+			hash = nb ^ (hash << 1);
+		return hash;
+	}
 };
 
 class SearchAlgo
 {
 public:
-    SearchAlgo() = delete;
-    SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-               std::vector<int> puzzleNumbers, size_t size_line);
+	SearchAlgo() = delete;
+	SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
+			   std::vector<int> puzzleNumbers, size_t size_line);
 
-    // TODO FUNCTIONS
-    bool Solve();
+	// TODO FUNCTIONS
+	bool Solve();
 
 private:
 
-    // Parameters
-    Algorithm                   AlgorithmUsed;
-    heuristic                   HeuristicFunction;
+	// Parameters
+	Algorithm                   AlgorithmUsed;
+	heuristic                   HeuristicFunction;
 
-    // Intern members
-    std::unique_ptr<Puzzle>     InitPuzzlePtr;
-    std::priority_queue<Puzzle> OpenedSet;
-    // Use the hash function of Puzzle
-    std::unordered_set<Puzzle>	ClosedSet;
-    size_t 						MaxSizeClosedSet = 0;
-    size_t 						MaxSizeOpenedSet = 0;
+	// Intern members
+	std::unique_ptr<Puzzle>     InitPuzzlePtr;
+	std::priority_queue<Puzzle> OpenedSet;
+	// Use the hash function of Puzzle
+	std::unordered_set<Puzzle>	ClosedSet;
+	size_t 						MaxSizeClosedSet = 0;
+	size_t 						MaxSizeOpenedSet = 0;
 };
 
 

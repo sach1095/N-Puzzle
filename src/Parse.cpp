@@ -2,6 +2,13 @@
 #include "Custom_Error.hpp"
 #include <filesystem>
 
+ParseFile::ParseFile(char **av) {
+	this->_isSolvable = true;
+	ParseAV(av);
+	std::cout << "Valid content afther parsing :" << std::endl;
+	this->showParsedContent();
+}
+
 const std::vector<int>& ParseFile::getParsedContent() const {
 	return this->_parsedContent;
 }
@@ -71,75 +78,41 @@ void ParseFile::parseContent() {
 	this->_parsedContent.erase(this->_parsedContent.begin());
 }
 
-// void ParseFile::checkWholeSequence() const {
-//     std::set<int> setNumberSeen;
-
-//     for (const int& num : this->_parsedContent) {
-//             setNumberSeen.insert(num);
-//     }
-
-//     size_t expectedSize = this->_parsedContent.size();
-//     size_t expectedTotalSize = expectedSize * expectedSize;
-
-//     if (setNumberSeen.size() != expectedTotalSize) {
-//         throw CustomError("Error: puzzle doesn't have the right number of unique value.");
-//     }
-
-//     for (size_t i = 0; i < expectedTotalSize; ++i) {
-//         if (setNumberSeen.find(static_cast<int>(i)) == setNumberSeen.end()) {
-//             throw CustomError("Error: puzzle number " + std::to_string(i) + " is missing.");
-//         }
-//     }
-// }
-
 void ParseFile::verifyPuzzle() {
-	  if (this->_sizeLine < 3) {
-        throw CustomError("Error: Bad size map, minimum size is 3.");
-    }
 
-    size_t totalElements = this->_parsedContent.size();
+	if (this->_sizeLine < 3) {
+		throw CustomError("Error: Bad size map, minimum size is 3.");
+	}
 
-    // Ensure the total number of elements is consistent with the expected size of each line
-    if (totalElements != this->_sizeLine * this->_sizeLine) {
-        throw CustomError("Error: the puzzle does not match the expected size.");
-    }
+	size_t totalElements = this->_parsedContent.size();
 
-    std::set<size_t> seenNumbers;
-    for (size_t num : this->_parsedContent) {
-        if (num >= totalElements) {
-            throw CustomError("Error: number (" + std::to_string(num) + ") out of range found in the puzzle.");
-        }
-        seenNumbers.insert(num);
-    }
+	// Ensure the total number of elements is consistent with the expected size of each line
+	if (totalElements != this->_sizeLine * this->_sizeLine) {
+		throw CustomError("Error: the puzzle does not match the expected size.");
+	}
 
-    if (seenNumbers.size() != totalElements) {
-        throw CustomError("Error: missing or duplicate numbers in the puzzle.");
-    }
+	std::set<size_t> seenNumbers;
+	for (size_t num : this->_parsedContent) {
+		if (num >= totalElements) {
+			throw CustomError("Error: number (" + std::to_string(num) + ") out of range found in the puzzle.");
+		}
+		seenNumbers.insert(num);
+	}
+
+	if (seenNumbers.size() != totalElements) {
+		throw CustomError("Error: missing or duplicate numbers in the puzzle.");
+	}
 }
 
 void ParseFile::showParsedContent() {
+
 	for (size_t i = 0; i < this->_parsedContent.size(); ++i) {
 		std::cout << this->_parsedContent[i] << ' ';
 		if ((i + 1) % this->_sizeLine == 0) {
-			std::cout << std::endl; // Commencez une nouvelle ligne après chaque `ligneTaille` éléments
+			std::cout << std::endl;
 		}
 	}
 	std::cout << std::endl;
-}
-
-void swapEmpty(std::vector<int>& p, int s) {
-	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
-	std::vector<int> poss;
-	if (idx % s > 0) poss.push_back(idx - 1);
-	if (idx % s < s - 1) poss.push_back(idx + 1);
-	if (idx / s > 0) poss.push_back(idx - s);
-	if (idx / s < s - 1) poss.push_back(idx + s);
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
-
-	std::swap(p[idx], p[swi]);
 }
 
 std::vector<int> makeGoal(int s) {
@@ -164,6 +137,21 @@ std::vector<int> makeGoal(int s) {
 	return puzzle;
 }
 
+void swapEmpty(std::vector<int>& p, int s) {
+	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
+	std::vector<int> poss;
+	if (idx % s > 0) poss.push_back(idx - 1);
+	if (idx % s < s - 1) poss.push_back(idx + 1);
+	if (idx / s > 0) poss.push_back(idx - s);
+	if (idx / s < s - 1) poss.push_back(idx + s);
+
+	std::random_device rd;
+	std::mt19937 g(rd());
+	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
+
+	std::swap(p[idx], p[swi]);
+}
+
 std::vector<int> makePuzzle(int size, bool isSolvable) {
 	std::vector<int> p = makeGoal(size);
 	for (int i = 0; i < 4096; ++i) {
@@ -181,24 +169,6 @@ std::vector<int> makePuzzle(int size, bool isSolvable) {
 	return p;
 }
 
-// int main() {
-//     int s = 3; // Taille de la grille
-//     bool solvable = true; // Puzzle solvable ou non
-
-//     std::vector<int> puzzle = makePuzzle(s, solvable);
-
-//     std::cout << "# This puzzle is " << (solvable ? "solvable" : "unsolvable") << std::endl;
-//     std::cout << s << std::endl;
-//     for (int y = 0; y < s; ++y) {
-//         for (int x = 0; x < s; ++x) {
-//             std::cout << std::setw(2) << puzzle[x + y * s] << " ";
-//         }
-//         std::cout << std::endl;
-//     }
-
-//     return 0;
-// }
-
 void ParseFile::ParseAV(char **av){
 
 	std::queue<std::string>	args;
@@ -215,11 +185,14 @@ void ParseFile::ParseAV(char **av){
 				throw CustomError("Error: No given argument for --size");
 			try
 			{
-				this->_sizeLine = std::stoi(args.front());
+				int temp = std::stoi(args.front());
+				if (temp < 2)
+					throw CustomError("");
+				this->_sizeLine = static_cast<size_t>(temp);
 				args.pop();
 			}
 			catch(const std::exception& e){
-				throw CustomError("Error: Bad argument for --size, " + args.front() + " is not a valide number.");
+				throw CustomError("Error: Bad argument for --size, " + args.front() + ".");
 			}
 		}
 		else if (args.front() == "--solvable"){
@@ -266,11 +239,4 @@ void ParseFile::ParseAV(char **av){
 		this->parseContent();
 	}
 	this->verifyPuzzle();
-}
-
-ParseFile::ParseFile(char **av) {
-	this->_isSolvable = true;
-	ParseAV(av);
-	std::cout << "Valid content afther parsing :" << std::endl;
-	this->showParsedContent();
 }
