@@ -44,8 +44,7 @@ public:
 
     // TODO FUNCTIONS
     bool Solve();
-    static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle);
-
+    static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
 
 private:
 

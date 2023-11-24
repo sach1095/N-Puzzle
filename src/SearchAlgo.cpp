@@ -21,7 +21,7 @@ std::vector<int> flatten(const std::vector<std::vector<int>>& vecOfVec)
     return result;
 }
 
-std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle)
+std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost)
 {
 	std::vector<Puzzle> neighbors;
 	const size_t zeroPositon = currentPuzzle.GetPositionZero();
@@ -31,7 +31,7 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle)
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - 1]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - 1, &currentPuzzle, LEFT, currentPuzzle.GetPathCost() + 1, 0);
+		neighbors.emplace_back(leftMoveCopy, zeroPositon - 1, &currentPuzzle, LEFT, newPathCost, 0);
 	}
 
 	// Right
@@ -39,7 +39,7 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle)
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + 1]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + 1, &currentPuzzle, RIGHT, currentPuzzle.GetPathCost() + 1, 0);
+		neighbors.emplace_back(leftMoveCopy, zeroPositon + 1, &currentPuzzle, RIGHT, newPathCost, 0);
 	}
 
 	// Up
@@ -47,7 +47,7 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle)
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - Puzzle::GetSizeLine()]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - Puzzle::GetSizeLine(), &currentPuzzle, UP, currentPuzzle.GetPathCost() + 1, 0);
+		neighbors.emplace_back(leftMoveCopy, zeroPositon - Puzzle::GetSizeLine(), &currentPuzzle, UP, newPathCost, 0);
 	}
 
 	// Down
@@ -106,24 +106,29 @@ bool SearchAlgo::Solve()
 			return true;
 		}
 
+		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;
 		// Loop over neightbors
-		for (auto& neighbor : SearchAlgo::FindNeighbors(top))
+		for (auto& neighbor : SearchAlgo::FindNeighbors(top, pathCostUpdated))
 		{
 			auto foundClosedSet = this->ClosedSet.find(neighbor);
 
 			// If not in the set, add it
 			if (foundClosedSet == this->ClosedSet.end())
 			{
-				// Compute missing heuristic
-				size_t neighborHeuristic = this->HeuristicFunction(neighbor.GetNumbers(), Puzzle::GetSizeLine(), Puzzle::GetMapSolution());
-				neighbor.SetHeuristicValue(neighborHeuristic);
-				neighbor.SetTotalCost(neighborHeuristic + neighbor.GetPathCost());
+				if (this->AlgorithmUsed != UNIFORM_COST)
+				{
+					// Compute missing heuristic
+					size_t neighborHeuristic = this->HeuristicFunction(neighbor.GetNumbers(), Puzzle::GetSizeLine(), Puzzle::GetMapSolution());
+					neighbor.SetHeuristicValue(neighborHeuristic);
+					neighbor.SetTotalCost(neighborHeuristic + neighbor.GetPathCost());
+				}
 				// Insert element
 				auto [it, success] = this->ClosedSet.insert(std::move(neighbor));
 				this->OpenedSet.emplace(it);
 			}
 			// If a better path is found, update the set and put in in the OpenSet
-			else if (neighbor.GetPathCost() < foundClosedSet->GetPathCost())
+			else if (this->AlgorithmUsed != GREEDY &&
+					 neighbor.GetPathCost() < foundClosedSet->GetPathCost())
 			{
 				auto& mutableSet = const_cast<Puzzle&>(*foundClosedSet);
 				// Update previous puzzle
