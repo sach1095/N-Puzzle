@@ -63,22 +63,44 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle)
 
 bool SearchAlgo::Solve()
 {
+
+	// Init algorithm
 	auto [it, success] = this->ClosedSet.insert(this->InitPuzzlePtr);
 	this->OpenedSet.push(it);
+
+	// Counters
+	size_t nbrLoop = 1;
+	size_t maxSizeClosedSet = 1;
 
 	while (!this->OpenedSet.empty())
 	{
 		auto& top = *this->OpenedSet.top();
 		this->OpenedSet.pop();
 
+		// Find a solution : print details
 		if (top == this->Solution)
 		{
 			std::cout << "Find a solution" << std::endl;
+			std::cout << "Total number of states selected : " << nbrLoop << std::endl;
+			std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
 			const Puzzle *lastValue = &top;
+			std::vector<Move> reverseMoveSolution;
 			while (lastValue->GetPreviousPuzzle())
 			{
-				std::cout << lastValue->GetLastMove();
+				reverseMoveSolution.push_back(lastValue->GetLastMove());
 				lastValue = lastValue->GetPreviousPuzzle();
+			}
+			std::cout << "Numbers of moves to the solution : " << reverseMoveSolution.size() << std::endl;
+			for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
+			{
+				if (*it == LEFT)
+					std::cout << "Left ";
+				else if (*it == RIGHT)
+					std::cout << "Right ";
+				else if (*it == UP)
+					std::cout << "Up ";
+				else if (*it == DOWN)
+					std::cout << "Down ";
 			}
 			std::cout << std::endl;
 			return true;
@@ -113,9 +135,16 @@ bool SearchAlgo::Solve()
 				// Add it back to the OpenSet
 				this->OpenedSet.emplace(foundClosedSet);
 			}
+
+			// Update counters
+			nbrLoop++;
+			if (this->ClosedSet.size() > maxSizeClosedSet)
+				maxSizeClosedSet = this->ClosedSet.size();
 		}
 	}
-	std::cout << "No solution found" << std::endl;
+	std::cout << "Unsolvable puzzle" << std::endl;
+	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
+	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
 
 	return false;
 }
