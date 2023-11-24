@@ -55,13 +55,40 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(),  &currentPuzzle, DOWN, currentPuzzle.GetPathCost() + 1, 0);
+		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(),  &currentPuzzle, DOWN, newPathCost, 0);
 	}
 
 	return neighbors;
 }
 
-bool SearchAlgo::Solve()
+void SearchAlgo::PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet)
+{
+	std::cout << "Find a solution" << std::endl;
+	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
+	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
+	const Puzzle *lastValue = &solution;
+	std::vector<Move> reverseMoveSolution;
+	while (lastValue->GetPreviousPuzzle())
+	{
+		reverseMoveSolution.push_back(lastValue->GetLastMove());
+		lastValue = lastValue->GetPreviousPuzzle();
+	}
+	std::cout << "Numbers of moves to the solution : " << reverseMoveSolution.size() << std::endl;
+	for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
+	{
+		if (*it == LEFT)
+			std::cout << "Left ";
+		else if (*it == RIGHT)
+			std::cout << "Right ";
+		else if (*it == UP)
+			std::cout << "Up ";
+		else if (*it == DOWN)
+			std::cout << "Down ";
+	}
+	std::cout << std::endl;
+}
+
+void SearchAlgo::Solve()
 {
 
 	// Init algorithm
@@ -80,30 +107,8 @@ bool SearchAlgo::Solve()
 		// Find a solution : print details
 		if (top == this->Solution)
 		{
-			std::cout << "Find a solution" << std::endl;
-			std::cout << "Total number of states selected : " << nbrLoop << std::endl;
-			std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
-			const Puzzle *lastValue = &top;
-			std::vector<Move> reverseMoveSolution;
-			while (lastValue->GetPreviousPuzzle())
-			{
-				reverseMoveSolution.push_back(lastValue->GetLastMove());
-				lastValue = lastValue->GetPreviousPuzzle();
-			}
-			std::cout << "Numbers of moves to the solution : " << reverseMoveSolution.size() << std::endl;
-			for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
-			{
-				if (*it == LEFT)
-					std::cout << "Left ";
-				else if (*it == RIGHT)
-					std::cout << "Right ";
-				else if (*it == UP)
-					std::cout << "Up ";
-				else if (*it == DOWN)
-					std::cout << "Down ";
-			}
-			std::cout << std::endl;
-			return true;
+			PrintSolution(top, nbrLoop, maxSizeClosedSet);
+			return;
 		}
 
 		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;
@@ -150,6 +155,4 @@ bool SearchAlgo::Solve()
 	std::cout << "Unsolvable puzzle" << std::endl;
 	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
 	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
-
-	return false;
 }

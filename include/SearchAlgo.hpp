@@ -42,9 +42,9 @@ public:
     SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
                std::vector<std::vector<int>> initContent);
 
-    // TODO FUNCTIONS
-    bool Solve();
+    void Solve();
     static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
+	static void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
 
 private:
 
