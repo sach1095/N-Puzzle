@@ -20,6 +20,7 @@ int main(int ac, char **av)
 		Puzzle::InitSizeLine(parsedContent.size());
 
         auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent);
+		algo.Solve();
 	}
 	catch(const CustomError& e)
 	{
