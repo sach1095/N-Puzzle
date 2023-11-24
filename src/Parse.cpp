@@ -117,6 +117,6 @@ ParseFile::ParseFile(const std::string& fileName) {
 	this->parseContent();
 	this->checkSize();
 	this->checkWholeSequence();
-	std::cout << "Valid content afther parsing :" << std::endl;
-	this->showParsedContent();
+	// std::cout << "Valid content afther parsing :" << std::endl;
+	// this->showParsedContent();
 }
