@@ -16,6 +16,9 @@ int main(int ac, char **av)
 		ParseFile parser(av[1]);
 		const std::vector<std::vector<int>>& parsedContent = parser.getParsedContent();
 
+		// Init Puzzle size
+		Puzzle::InitSizeLine(parsedContent.size());
+
         auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent);
 	}
 	catch(const CustomError& e)

@@ -8,4 +8,12 @@ enum Algorithm {
 	UNIFORM_COST = 2,
 };
 
+enum Move {
+	LEFT = 0,
+	RIGHT = 1,
+	UP = 2,
+	DOWN = 3,
+	NONE = 4,
+};
+
 #endif

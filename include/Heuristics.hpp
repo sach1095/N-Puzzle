@@ -2,15 +2,16 @@
 #ifndef HEURISTICS_HPP
 #define HEURISTICS_HPP
 
+#include <unordered_map>
 #include <tuple>
 #include <vector>
 
-typedef size_t (*heuristic)(const std::vector<int>& puzzleNumbers, size_t sizeLine);
+typedef size_t (*heuristic)(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::unordered_map<int, size_t>& mapSolution);
 
 
-size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine);
+size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::unordered_map<int, size_t>& mapSolution);
 
 // Utils
-std::tuple<size_t, size_t> get_2dPosition(int position, size_t sizeLine);
+std::tuple<size_t, size_t> get_2dPosition(size_t position, size_t sizeLine);
 
 #endif
