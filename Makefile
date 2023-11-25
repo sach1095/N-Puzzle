@@ -66,7 +66,7 @@ run : all
 	@ ./$(NAME) --size 3
 
 file: all
-	@ ./$(NAME) --file maps/valids/4x4/solvable.txt
+	@ ./$(NAME) --file maps/valids/3x3/3x3_comment_inline.txt
 
 help	:
 	@ printf "How run Npuzzle : \n\n"

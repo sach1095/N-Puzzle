@@ -86,7 +86,7 @@ void ParseFile::verifyPuzzle() {
 
 	size_t totalElements = this->_parsedContent.size();
 
-	// Ensure the total number of elements is consistent with the expected size of each line
+	// Ensure the total number of elements is consistent with the expected size of each row.
 	if (totalElements != this->_sizeLine * this->_sizeLine) {
 		throw CustomError("Error: the puzzle does not match the expected size.");
 	}
@@ -192,7 +192,7 @@ void ParseFile::ParseAV(char **av){
 				args.pop();
 			}
 			catch(const std::exception& e){
-				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value need to be a number and big than 2.");
+				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value needs to be a number and bigger than 2.");
 			}
 		}
 		else if (args.front() == "--solvable"){
