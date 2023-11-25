@@ -15,10 +15,12 @@ int main(int ac, char **av)
 			throw CustomError("Usage: ./Npuzzle [Path to map file]");
 		ParseFile parser(av[1]);
 		const std::vector<std::vector<int>>& parsedContent = parser.getParsedContent();
-		if (parsedContent.size() > 10)
-			throw CustomError("For now size > 10 is not handled");
+
+		// Init Puzzle size
+		Puzzle::InitSizeLine(parsedContent.size());
 
         auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent);
+		algo.Solve();
 	}
 	catch(const CustomError& e)
 	{
