@@ -2,22 +2,22 @@
 #include "Custom_Error.hpp"
 #include <filesystem>
 
-ParseFile::ParseFile(char **av) {
+Parse::Parse(char **av) {
 	this->_isSolvable = true;
 	ParseAV(av);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
 }
 
-const std::vector<int>& ParseFile::getParsedContent() const {
+const std::vector<int>& Parse::getParsedContent() const {
 	return this->_parsedContent;
 }
 
-size_t	ParseFile::getSizeline(){
+size_t	Parse::getSizeline(){
 	return this->_sizeLine;
 }
 
-void ParseFile::readInputFile() {
+void Parse::readInputFile() {
 	const std::string& filePathStr = this->_fileName;
 	std::filesystem::path filePath(filePathStr);
 
@@ -55,7 +55,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return result;
 }
 
-void ParseFile::parseContent() {
+void Parse::parseContent() {
 	while (!this->_content.empty()) {
 		const auto& line = this->_content.front();
 		std::vector<std::string> tokens = split(line, ' ');
@@ -78,7 +78,7 @@ void ParseFile::parseContent() {
 	this->_parsedContent.erase(this->_parsedContent.begin());
 }
 
-void ParseFile::verifyPuzzle() {
+void Parse::verifyPuzzle() {
 
 	if (this->_sizeLine < 3) {
 		throw CustomError("Error: Bad size map, minimum size is 3.");
@@ -104,7 +104,7 @@ void ParseFile::verifyPuzzle() {
 	}
 }
 
-void ParseFile::showParsedContent() {
+void Parse::showParsedContent() {
 
 	for (size_t i = 0; i < this->_parsedContent.size(); ++i) {
 		std::cout << this->_parsedContent[i] << ' ';
@@ -169,7 +169,7 @@ std::vector<int> makePuzzle(int size, bool isSolvable) {
 	return p;
 }
 
-void ParseFile::ParseAV(char **av){
+void Parse::ParseAV(char **av){
 
 	std::queue<std::string>	args;
 	int	otherFlag = 0;

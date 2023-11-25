@@ -11,7 +11,7 @@
 #include <random>
 #include <iomanip>
 
-class ParseFile {
+class Parse {
 private:
 	size_t							_sizeLine;
 	bool							_isSolvable;
@@ -22,7 +22,7 @@ private:
 
 public:
 
-	ParseFile(char **av);
+	Parse(char **av);
 	const std::vector<int>& getParsedContent() const;
 	void ParseAV(char **av);
 	void readInputFile();

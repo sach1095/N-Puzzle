@@ -5,7 +5,6 @@
 
 // TODO Handle different heuristic function + different algorithm used
 //! For now only using Manathan-distance as heuristic with A* algo
-//TODO Handle random generated map usage
 
 int main(int ac, char **av)
 {
@@ -13,11 +12,13 @@ int main(int ac, char **av)
 	{
 		if (ac == 1)
 			throw CustomError("Error: no argments given.");
-		ParseFile parser(av);
-		const std::vector<int>& parsedContent = parser.getParsedContent();
-		if (parsedContent.size() > 10)
-			throw CustomError("For now size > 10 is not handled");
-		auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent, parser.getSizeline());
+		Parse parser(av);
+
+		// Init Puzzle size
+		Puzzle::InitSizeLine(parser.getSizeline());
+
+		auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parser.getParsedContent());
+		algo.Solve();
 	}
 	catch(const CustomError& e)
 	{

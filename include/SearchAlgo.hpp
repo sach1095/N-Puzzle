@@ -1,6 +1,7 @@
 #ifndef SEARCHALGO_HPP
 #define SEARCHALGO_HPP
 
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <unordered_set>
@@ -23,15 +24,27 @@ struct std::hash<Puzzle>
 	}
 };
 
+using setIterator = std::unordered_set<Puzzle>::iterator;
+
+// Comparaison structure for puzzle
+struct ComparePuzzleCost
+ {
+   bool operator()(setIterator& l, setIterator& r)
+   {
+       return l->GetTotalCost() > r->GetTotalCost();
+   }
+ };
+
 class SearchAlgo
 {
 public:
 	SearchAlgo() = delete;
 	SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-			   std::vector<int> puzzleNumbers, size_t size_line);
+			   std::vector<int> puzzleNumbers);
 
-	// TODO FUNCTIONS
-	bool Solve();
+    void Solve();
+    static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
+	static void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
 
 private:
 
@@ -39,19 +52,17 @@ private:
 	Algorithm                   AlgorithmUsed;
 	heuristic                   HeuristicFunction;
 
-	// Intern members
-	std::unique_ptr<Puzzle>     InitPuzzlePtr;
-	std::priority_queue<Puzzle> OpenedSet;
-	// Use the hash function of Puzzle
-	std::unordered_set<Puzzle>	ClosedSet;
-	size_t 						MaxSizeClosedSet = 0;
-	size_t 						MaxSizeOpenedSet = 0;
+    // Intern members
+    Puzzle					     InitPuzzlePtr;
+    std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost> OpenedSet;
+    // Use the hash function of Puzzle
+    std::unordered_set<Puzzle>	ClosedSet;
+    size_t 						MaxSizeClosedSet = 0;
+    size_t 						MaxSizeOpenedSet = 0;
+	const Puzzle				&Solution;
 };
 
-
-// TODO FUNCTIONS
-std::vector<Puzzle> GetNeighbors(const Puzzle& puzzle);
-bool UpdatePathCost(Puzzle& puzzle, size_t potentialNewPathCost, Puzzle* potentialParent);
-bool IsSolution(const Puzzle& puzzle);
+// Helper functions
+std::vector<int> flatten(const std::vector<std::vector<int>>& vecOfVec);
 
 #endif
