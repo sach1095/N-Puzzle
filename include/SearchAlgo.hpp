@@ -15,13 +15,13 @@
 template <>
 struct std::hash<Puzzle>
 {
-    std::size_t operator()(const Puzzle& puzzle) const noexcept
-    {
-        size_t hash = 0;
-        for (int nb : puzzle.GetNumbers())
-            hash = nb ^ (hash << 1);
-        return hash;
-    }
+	std::size_t operator()(const Puzzle& puzzle) const noexcept
+	{
+		size_t hash = 0;
+		for (int nb : puzzle.GetNumbers())
+			hash = nb ^ (hash << 1);
+		return hash;
+	}
 };
 
 using setIterator = std::unordered_set<Puzzle>::iterator;
@@ -38,9 +38,9 @@ struct ComparePuzzleCost
 class SearchAlgo
 {
 public:
-    SearchAlgo() = delete;
-    SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-               std::vector<std::vector<int>> initContent);
+	SearchAlgo() = delete;
+	SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
+			   std::vector<int> puzzleNumbers);
 
     void Solve();
     static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
@@ -48,9 +48,9 @@ public:
 
 private:
 
-    // Parameters
-    Algorithm                   AlgorithmUsed;
-    heuristic                   HeuristicFunction;
+	// Parameters
+	Algorithm                   AlgorithmUsed;
+	heuristic                   HeuristicFunction;
 
     // Intern members
     Puzzle					     InitPuzzlePtr;

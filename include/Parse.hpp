@@ -8,21 +8,28 @@
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <random>
+#include <iomanip>
 
-class ParseFile {
+class Parse {
 private:
-	std::queue<std::string> _content;
-	std::vector<std::vector<int>> _parsedContent;
+	size_t							_sizeLine;
+	bool							_isSolvable;
+	bool							_isFiles;
+	std::queue<std::string>			_content;
+	std::string						_fileName;
+	std::vector<int>				_parsedContent;
 
 public:
 
-	ParseFile(const std::string& fileName);
-	const std::vector<std::vector<int>>& getParsedContent() const;
-	void readInputFile(const std::string& fileName);
+	Parse(char **av);
+	const std::vector<int>& getParsedContent() const;
+	void ParseAV(char **av);
+	void readInputFile();
 	void parseContent();
 	void showParsedContent();
-	void checkWholeSequence() const;
-	void checkSize();
+	void verifyPuzzle();
+	size_t getSizeline();
 };
 
 #endif

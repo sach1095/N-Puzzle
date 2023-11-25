@@ -63,7 +63,10 @@ fclean	:	clean
 re		:	fclean all
 
 run : all
-	@ ./$(NAME) maps/valids/3x3/solvable.txt
+	@ ./$(NAME) --size 3
+
+file: all
+	@ ./$(NAME) --file maps/valids/3x3/3x3_comment_inline.txt
 
 help	:
 	@ printf "How run Npuzzle : \n\n"
@@ -71,9 +74,10 @@ help	:
 	@ printf "or\n"
 	@ printf "make run\n\n"
 	@ printf "Command of the Makefile : \n\n"
-	@ printf " - run :          run algo witch basic map \n"
+	@ printf " - run :          run algo witch generated map 3x3 \n"
+	@ printf " - file :         run algo witch map 4x4 solvable.txt \n"
 	@ printf " - clean :        clean objs \n"
 	@ printf " - fclean :       clean exec and objs\n"
 	@ printf " - re :           clean and recompile\n"
 
-.PHONY: all compil clean fclean re leaks run help
+.PHONY: all compil clean fclean re leaks run file help

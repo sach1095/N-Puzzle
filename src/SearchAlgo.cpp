@@ -2,23 +2,14 @@
 #include "SearchAlgo.hpp"
 
 SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-                       std::vector<std::vector<int>> initContent)
+                       std::vector<int> puzzleNumbers)
                 : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(Puzzle::GetSolution())
 {
-    auto puzzleNumbers = flatten(initContent);
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
     this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
 	0, this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetMapSolution()));
-}
-
-std::vector<int> flatten(const std::vector<std::vector<int>>& vecOfVec)
-{
-    std::vector<int> result;
-    for(const auto &v: vecOfVec)
-        result.insert(result.end(), v.begin(), v.end());
-    return result;
 }
 
 std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost)

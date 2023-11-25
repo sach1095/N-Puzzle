@@ -5,21 +5,19 @@
 
 // TODO Handle different heuristic function + different algorithm used
 //! For now only using Manathan-distance as heuristic with A* algo
-//TODO Handle random generated map usage
 
 int main(int ac, char **av)
 {
 	try
 	{
-		if (ac != 2)
-			throw CustomError("Usage: ./Npuzzle [Path to map file]");
-		ParseFile parser(av[1]);
-		const std::vector<std::vector<int>>& parsedContent = parser.getParsedContent();
+		if (ac == 1)
+			throw CustomError("Error: no argments given.");
+		Parse parser(av);
 
 		// Init Puzzle size
-		Puzzle::InitSizeLine(parsedContent.size());
+		Puzzle::InitSizeLine(parser.getSizeline());
 
-        auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parsedContent);
+		auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parser.getParsedContent());
 		algo.Solve();
 	}
 	catch(const CustomError& e)

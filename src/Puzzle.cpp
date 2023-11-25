@@ -11,26 +11,26 @@ Puzzle::Puzzle(const std::vector<int>& vecNumbers, size_t positionZero,
 			   Numbers(vecNumbers), PositionZero(positionZero), PreviousPuzzle(previousPuzzle), LastMove(lastMove),
 			   PathCost(pathCost), HeuristicValue(heuristic), TotalCost(pathCost + heuristic)
 {
-    if (!Puzzle::SizeLine)
-        throw CustomError("Set Puzzle::SizeLine before using Puzzle class");
+	if (!Puzzle::SizeLine)
+		throw CustomError("Set Puzzle::SizeLine before using Puzzle class");
 }
 
 bool Puzzle::operator==(const Puzzle& rhs) const
 {
-    return this->Numbers == rhs.Numbers;
+	return this->Numbers == rhs.Numbers;
 }
 
 void Puzzle::InitSizeLine(size_t size)
 {
-    static bool alreadyInitialize = false;
+	static bool alreadyInitialize = false;
 
-    if (alreadyInitialize)
-        throw CustomError("The size of the Puzzle has already been initialized");
-    else
-    {
-        Puzzle::SizeLine = size;
-        alreadyInitialize = true;
-    }
+	if (alreadyInitialize)
+		throw CustomError("The size of the Puzzle has already been initialized");
+	else
+	{
+		Puzzle::SizeLine = size;
+		alreadyInitialize = true;
+	}
 }
 
 size_t Puzzle::GetSizeLine()
