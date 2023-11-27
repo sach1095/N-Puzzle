@@ -121,7 +121,6 @@ std::vector<int> makeGoal(int s) {
 	int cur = 1, x = 0, ix = 1, y = 0, iy = 0;
 	while (true) {
 		puzzle[x + y * s] = cur;
-		if (cur == 0) break;
 		cur++;
 		if (x + ix == s || x + ix < 0 || (ix != 0 && puzzle[x + ix + y * s] != -1)) {
 			iy = ix;
@@ -132,7 +131,11 @@ std::vector<int> makeGoal(int s) {
 		}
 		x += ix;
 		y += iy;
-		if (cur == s * s) cur = 0;
+		if (cur == s * s)
+		{
+			cur = 0;
+			break;
+		}
 	}
 	return puzzle;
 }
