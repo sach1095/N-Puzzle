@@ -1,7 +1,7 @@
 # Compilation
 NAME		=	N-Puzzle
 CC			=	g++
-FLAGS		=	-std=c++17 -Ofast -Wall -Wextra -Werror -g3
+FLAGS		=	-std=c++17 -Wall -Wextra -Werror -g3 -O3
 HEADER		=	-I$(PATH_INC)
 
 # Color Code and template code
