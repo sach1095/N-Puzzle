@@ -8,6 +8,13 @@ enum Algorithm {
 	UNIFORM_COST = 2,
 };
 
+enum Heuristics {
+	MANHATTAN = 0,
+	// TODO a implementer
+	OTHER = 1,
+	OTHERTWO = 2,
+};
+
 enum Move {
 	LEFT = 0,
 	RIGHT = 1,

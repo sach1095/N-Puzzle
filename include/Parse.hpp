@@ -10,10 +10,13 @@
 #include <set>
 #include <random>
 #include <iomanip>
+#include "Enum.hpp"
 
 class Parse {
 private:
 	size_t							_sizeLine;
+	Algorithm						_algo;
+	Heuristics						_heuristics;
 	bool							_isSolvable;
 	bool							_isFiles;
 	std::queue<std::string>			_content;
@@ -30,6 +33,8 @@ public:
 	void showParsedContent();
 	void verifyPuzzle();
 	size_t getSizeline();
+	Algorithm getAlgoSelected();
+	Heuristics getHeuristicsSelected();
 };
 
 #endif

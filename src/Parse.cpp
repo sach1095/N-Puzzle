@@ -4,6 +4,8 @@
 
 Parse::Parse(char **av) {
 	this->_isSolvable = true;
+	this->_algo = ASTAR;
+	this->_heuristics = MANHATTAN;
 	ParseAV(av);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
@@ -12,6 +14,14 @@ Parse::Parse(char **av) {
 const std::vector<int>& Parse::getParsedContent() const {
 	return this->_parsedContent;
 }
+
+Algorithm	Parse::getAlgoSelected(){
+	return this->_algo;
+};
+
+Heuristics	Parse::getHeuristicsSelected(){
+	return this->_heuristics;
+};
 
 size_t	Parse::getSizeline(){
 	return this->_sizeLine;
@@ -227,6 +237,30 @@ void Parse::ParseAV(char **av){
 			std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
 			std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
 			exit(0);
+		}
+		else if (args.front() == "--algo"){
+			args.pop();
+			if (args.front() == "astar")
+				this->_algo = ASTAR;
+			else if (args.front() == "uniform")
+				this->_algo = UNIFORM_COST;
+			else if (args.front() == "greedy")
+				this->_algo = GREEDY;
+			else
+				throw CustomError("Error: Unrecognized args for --algo, valide choose is [astar/uniform/greedy]");
+			args.pop();
+		}
+		else if (args.front() == "--heuristic"){
+			args.pop();
+			if (args.front() == "manhattan")
+				this->_heuristics = MANHATTAN;
+			else if (args.front() == "other")
+				this->_heuristics = OTHER;
+			else if (args.front() == "othertwo")
+				this->_heuristics = OTHERTWO;
+			else
+				throw CustomError("Error: Unrecognized args for --algo, valide choose is [astar/uniform/greedy]");
+			args.pop();
 		}
 		else
 			throw CustomError("Error: Unrecognized args : " + args.front());

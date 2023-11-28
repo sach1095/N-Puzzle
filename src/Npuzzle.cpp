@@ -16,8 +16,8 @@ int main(int ac, char **av)
 
 		// Init Puzzle size
 		Puzzle::InitSizeLine(parser.getSizeline());
-
-		auto algo = SearchAlgo(Algorithm::ASTAR, manhattan_distance, parser.getParsedContent());
+		std::cout << "algo choise is : " << parser.getAlgoSelected() << std::endl;
+		auto algo = SearchAlgo(parser.getAlgoSelected(), manhattan_distance, parser.getParsedContent());
 		algo.Solve();
 	}
 	catch(const CustomError& e)
