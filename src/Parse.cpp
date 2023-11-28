@@ -2,11 +2,12 @@
 #include "Custom_Error.hpp"
 #include <filesystem>
 
-Parse::Parse(char **av) {
+Parse::Parse(char **inputArgs) {
 	this->_isSolvable = true;
+	this->_fileName = false;
 	this->_algo = ASTAR;
 	this->_heuristics = MANHATTAN;
-	ParseAV(av);
+	ParseAV(inputArgs);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
 }
@@ -125,69 +126,103 @@ void Parse::showParsedContent() {
 	std::cout << std::endl;
 }
 
-std::vector<int> makeGoal(int s) {
-	int ts = s * s;
-	std::vector<int> puzzle(ts, -1);
-	int cur = 1, x = 0, ix = 1, y = 0, iy = 0;
-	while (true) {
-		puzzle[x + y * s] = cur;
-		cur++;
-		if (x + ix == s || x + ix < 0 || (ix != 0 && puzzle[x + ix + y * s] != -1)) {
-			iy = ix;
-			ix = 0;
-		} else if (y + iy == s || y + iy < 0 || (iy != 0 && puzzle[x + (y + iy) * s] != -1)) {
-			ix = -iy;
-			iy = 0;
-		}
-		x += ix;
-		y += iy;
-		if (cur == s * s)
-		{
-			cur = 0;
-			break;
-		}
-	}
-	return puzzle;
+
+void swapEmptyTile(std::vector<int>& puzzle, int puzzleSize) {
+	int emptyTileIndex = std::distance(puzzle.begin(), std::find(puzzle.begin(), puzzle.end(), 0));
+	std::vector<int> possibleSwaps;
+
+	// Vérifier les mouvements possibles et les ajouter à possibleSwaps
+	if (emptyTileIndex % puzzleSize > 0) // Si pas sur la première colonne
+		possibleSwaps.push_back(emptyTileIndex - 1); // Swap avec la tuile à gauche
+	if (emptyTileIndex % puzzleSize < puzzleSize - 1) // Si pas sur la dernière colonne
+		possibleSwaps.push_back(emptyTileIndex + 1); // Swap avec la tuile à droite
+	if (emptyTileIndex / puzzleSize > 0) // Si pas sur la première ligne
+		possibleSwaps.push_back(emptyTileIndex - puzzleSize); // Swap avec la tuile au-dessus
+	if (emptyTileIndex / puzzleSize < puzzleSize - 1) // Si pas sur la dernière ligne
+		possibleSwaps.push_back(emptyTileIndex + puzzleSize); // Swap avec la tuile en-dessous
+
+	// Choisir un mouvement aléatoire parmi les mouvements possibles
+	std::random_device rd;
+	std::mt19937 generator(rd());
+	int swapWithIndex = possibleSwaps[std::uniform_int_distribution<int>(0, possibleSwaps.size() - 1)(generator)];
+
+	// Échanger la tuile vide avec la tuile choisie
+	std::swap(puzzle[emptyTileIndex], puzzle[swapWithIndex]);
 }
 
-void swapEmpty(std::vector<int>& p, int s) {
-	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
-	std::vector<int> poss;
-	if (idx % s > 0) poss.push_back(idx - 1);
-	if (idx % s < s - 1) poss.push_back(idx + 1);
-	if (idx / s > 0) poss.push_back(idx - s);
-	if (idx / s < s - 1) poss.push_back(idx + s);
+std::vector<int> makeGoal(int puzzleSize) {
+    int totalTiles = puzzleSize * puzzleSize;
+    std::vector<int> puzzle;
 
-	std::random_device rd;
-	std::mt19937 g(rd());
-	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
+    // Remplir le puzzle avec des nombres de 1 à puzzleSize*puzzleSize - 1
+    for (int i = 1; i < totalTiles; ++i) {
+        puzzle.push_back(i);
+    }
 
-	std::swap(p[idx], p[swi]);
+    // Ajouter 0 pour la tuile vide (dernière case)
+    puzzle.push_back(0);
+
+    return puzzle;
 }
 
 std::vector<int> makePuzzle(int size, bool isSolvable) {
-	std::vector<int> p = makeGoal(size);
-	for (int i = 0; i < 4096; ++i) {
-		swapEmpty(p, size);
+	std::cout << "debug Start" << std::endl;
+	std::vector<int> puzzle = makeGoal(size);
+	for (size_t i = 0; i < puzzle.size(); ++i) {
+		std::cout << puzzle[i] << ' ';
+		if ((i + 1) % size == 0) {
+			std::cout << std::endl;
+		}
 	}
+	std::cout << std::endl;
+	std::cout << "debug afther goal" << std::endl;
+	for (int i = 0; i < 4096; ++i) {
+		swapEmptyTile(puzzle, size);
+	}
+	std::cout << "debug afther shit" << std::endl;
 
 	if (!isSolvable) {
-		if (p[0] == 0 || p[1] == 0) {
-			std::swap(p[p.size() - 1], p[p.size() - 2]);
+		if (puzzle[0] == 0 || puzzle[1] == 0) {
+			std::swap(puzzle[puzzle.size() - 1], puzzle[puzzle.size() - 2]);
 		} else {
-			std::swap(p[0], p[1]);
+			std::swap(puzzle[0], puzzle[1]);
 		}
 	}
 
-	return p;
+	return puzzle;
 }
 
-void Parse::ParseAV(char **av){
+void	process_help() {
+	std::cout << "Usage :" << std::endl;
+	std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
+	std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
+	std::cout << "other flags optional :\n--algo [astar/uniform/greedy]" << std::endl;
+
+	// Explications des algorithmes
+	std::cout << " - Astar : Utilise une heuristique pour trouver le chemin le plus court vers la solution." << std::endl;
+	std::cout << " - Uniform : Explore les chemins en fonction de leur coût cumulé sans utiliser d'heuristique." << std::endl;
+	std::cout << " - Greedy : Utilise uniquement l'heuristique pour guider la recherche, sans tenir compte du coût passé." << std::endl;
+
+	std::cout << "\n--heuristic [manhattan/linear/tiles]" << std::endl;
+
+	// Explications des heuristiques
+	std::cout << " - Manhattan : Calcule le coût en se basant sur la distance de Manhattan de chaque tuile à sa position cible." << std::endl;
+	std::cout << " - Linear : Ajoute une pénalité pour les conflits linéaires à la distance de Manhattan." << std::endl;
+	std::cout << " - Tiles : Compte le nombre de tuiles qui ne sont pas à leur emplacement correct." << std::endl;
+
+	exit(0);
+}
+
+void	Parse::ParseAV(char **inputArgs){
 
 	std::queue<std::string>	args;
+
 	int	otherFlag = 0;
-	for (size_t i = 1; av[i]; i++)
-		args.push(av[i]);
+	for (size_t i = 1; inputArgs[i]; i++){
+		if (strcmp(inputArgs[i], "--help") == 0)
+			process_help();
+		args.push(inputArgs[i]);
+	}
 	while (!args.empty())
 	{
 		if (args.front() == "--size")
@@ -198,10 +233,10 @@ void Parse::ParseAV(char **av){
 				throw CustomError("Error: No given argument for --size");
 			try
 			{
-				int temp = std::stoi(args.front());
-				if (temp <= 2)
+				int resultCast = std::stoi(args.front());
+				if (resultCast <= 2)
 					throw CustomError("");
-				this->_sizeLine = static_cast<size_t>(temp);
+				this->_sizeLine = static_cast<size_t>(resultCast);
 				args.pop();
 			}
 			catch(const std::exception& e){
@@ -223,23 +258,16 @@ void Parse::ParseAV(char **av){
 		}
 		else if (args.front() == "--file"){
 			args.pop();
-			if (otherFlag != 0)
-				throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
 			if (args.empty())
 				throw CustomError("Error: No given argument for --file");
 			this->_fileName = args.front();
 			this->_isFiles = true;
 			args.pop();
 		}
-		else if (args.front() == "--help"){
-			args.pop();
-			std::cout << "Usage :" << std::endl;
-			std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
-			std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
-			exit(0);
-		}
 		else if (args.front() == "--algo"){
 			args.pop();
+			if (args.empty())
+				throw CustomError("Error: No given argument for --algo");
 			if (args.front() == "astar")
 				this->_algo = ASTAR;
 			else if (args.front() == "uniform")
@@ -252,28 +280,33 @@ void Parse::ParseAV(char **av){
 		}
 		else if (args.front() == "--heuristic"){
 			args.pop();
+			if (args.empty())
+				throw CustomError("Error: No given argument for --heuristic");
 			if (args.front() == "manhattan")
 				this->_heuristics = MANHATTAN;
-			else if (args.front() == "other")
-				this->_heuristics = OTHER;
-			else if (args.front() == "othertwo")
-				this->_heuristics = OTHERTWO;
+			else if (args.front() == "linear")
+				this->_heuristics = LINEAR_CONFLICT;
+			else if (args.front() == "tiles")
+				this->_heuristics = TILES;
 			else
-				throw CustomError("Error: Unrecognized args for --algo, valide choose is [astar/uniform/greedy]");
+				throw CustomError("Error: Unrecognized args for --heuristic, valide choose is [manhattan/linear/tiles]");
 			args.pop();
 		}
 		else
 			throw CustomError("Error: Unrecognized args : " + args.front());
 	}
 
-	if (!this->_isFiles){
+	std::cout << "debug = " << this->_isFiles << std::endl;
+	if (this->_isFiles){
+		if (otherFlag != 0)
+		throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
+		this->readInputFile();
+		this->parseContent();
+	}
+	else {
 		if (this->_sizeLine < 2)
 			throw CustomError("Error: Bad argument for --size, the minimum for a map size is 3");
 		this->_parsedContent = makePuzzle(this->_sizeLine, this->_isSolvable);
-	}
-	else{
-		this->readInputFile();
-		this->parseContent();
 	}
 	this->verifyPuzzle();
 }

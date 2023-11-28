@@ -10,6 +10,7 @@
 #include <set>
 #include <random>
 #include <iomanip>
+#include <cstring>
 #include "Enum.hpp"
 
 class Parse {

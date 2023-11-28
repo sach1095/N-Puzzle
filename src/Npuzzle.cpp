@@ -2,7 +2,6 @@
 #include "Parse.hpp"
 #include "SearchAlgo.hpp"
 
-
 // TODO Handle different heuristic function + different algorithm used
 //! For now only using Manathan-distance as heuristic with A* algo
 
@@ -17,8 +16,20 @@ int main(int ac, char **av)
 		// Init Puzzle size
 		Puzzle::InitSizeLine(parser.getSizeline());
 		std::cout << "algo choise is : " << parser.getAlgoSelected() << std::endl;
-		auto algo = SearchAlgo(parser.getAlgoSelected(), manhattan_distance, parser.getParsedContent());
-		algo.Solve();
+		Heuristics heuristicToUse = parser.getHeuristicsSelected();
+
+		if (heuristicToUse == MANHATTAN){
+			auto algo = SearchAlgo(parser.getAlgoSelected(), manhattan_distance, parser.getParsedContent());
+		}
+		else if (heuristicToUse == LINEAR_CONFLICT){
+			auto algo = SearchAlgo(parser.getAlgoSelected(), linear_conflict, parser.getParsedContent());
+			algo.Solve();
+		}
+		else if (heuristicToUse == TILES)
+		{
+				auto algo = SearchAlgo(parser.getAlgoSelected(), tiles_out_of_place, parser.getParsedContent());
+			algo.Solve();
+		}
 	}
 	catch(const CustomError& e)
 	{

@@ -10,9 +10,8 @@ enum Algorithm {
 
 enum Heuristics {
 	MANHATTAN = 0,
-	// TODO a implementer
-	OTHER = 1,
-	OTHERTWO = 2,
+	LINEAR_CONFLICT = 1,
+	TILES = 2,
 };
 
 enum Move {

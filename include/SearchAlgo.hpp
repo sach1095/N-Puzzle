@@ -65,7 +65,4 @@ private:
 	const Puzzle				&Solution;
 };
 
-// Helper functions
-std::vector<int> flatten(const std::vector<std::vector<int>>& vecOfVec);
-
 #endif
