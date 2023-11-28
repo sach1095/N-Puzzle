@@ -79,6 +79,46 @@ void SearchAlgo::PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t ma
 	std::cout << std::endl;
 }
 
+// Delete the n last char in the console
+void deleteConsoleNchar(size_t nchar)
+{
+	std::cout << std::string(nchar, '\b')
+			  << std::string(nchar, ' ')
+			  << std::string(nchar, '\b')
+			  << std::flush;
+}
+
+// Print waiting message if needed or else erase it
+void handleWaitingMessage(bool needPrint)
+{
+	static std::string waitingMsg;
+	static auto baseTime = steady_clock::now();
+
+	if (!needPrint)
+	{
+		deleteConsoleNchar(waitingMsg.size());
+		return;
+	}
+
+	if (waitingMsg.empty())
+	{
+		waitingMsg = "Computing";
+		std::cout << waitingMsg << std::flush;
+	}
+
+	if (duration_cast<milliseconds>(steady_clock::now() - baseTime).count() > 1000)
+	{
+		baseTime = steady_clock::now();
+
+		deleteConsoleNchar(waitingMsg.size());
+		if (waitingMsg.size() == std::string("Computing...").size())
+			waitingMsg = "Computing";
+		else
+			waitingMsg += '.';
+		std::cout << waitingMsg << std::flush;
+	}
+}
+
 void SearchAlgo::Solve()
 {
 
@@ -98,10 +138,15 @@ void SearchAlgo::Solve()
 		// Find a solution : print details
 		if (top == this->Solution)
 		{
+			handleWaitingMessage(false);
 			PrintSolution(top, nbrLoop, maxSizeClosedSet);
 			return;
 		}
 
+		// Output message than the program is computing
+		handleWaitingMessage(true);
+
+		// Compute algorithm
 		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;
 		// Loop over neightbors
 		for (auto& neighbor : SearchAlgo::FindNeighbors(top, pathCostUpdated))
@@ -143,6 +188,8 @@ void SearchAlgo::Solve()
 				maxSizeClosedSet = this->ClosedSet.size();
 		}
 	}
+
+	handleWaitingMessage(false);
 	std::cout << "Unsolvable puzzle" << std::endl;
 	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
 	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;

@@ -2,6 +2,7 @@
 #define SEARCHALGO_HPP
 
 #include <algorithm>
+#include <chrono>
 #include <memory>
 #include <queue>
 #include <unordered_set>
@@ -10,6 +11,8 @@
 #include "Enum.hpp"
 #include "Heuristics.hpp"
 #include "Puzzle.hpp"
+
+using namespace std::chrono;
 
 // Hash function for Puzzle
 template <>
