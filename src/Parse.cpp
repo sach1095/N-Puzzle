@@ -150,76 +150,77 @@ void Parse::showParsedContent()
 	std::cout << std::endl;
 }
 
-void swapEmpty(std::vector<int> &p, int s)
+void swapEmptyTile(std::vector<int> &puzzle, int puzzleSize)
 {
-	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
-	std::vector<int> poss;
-	if (idx % s > 0)
-		poss.push_back(idx - 1);
-	if (idx % s < s - 1)
-		poss.push_back(idx + 1);
-	if (idx / s > 0)
-		poss.push_back(idx - s);
-	if (idx / s < s - 1)
-		poss.push_back(idx + s);
+	int emptyTileIndex = std::distance(puzzle.begin(), std::find(puzzle.begin(), puzzle.end(), 0));
+	std::vector<int> possibleSwaps;
+	if (emptyTileIndex % puzzleSize > 0)
+		possibleSwaps.push_back(emptyTileIndex - 1);
+	if (emptyTileIndex % puzzleSize < puzzleSize - 1)
+		possibleSwaps.push_back(emptyTileIndex + 1);
+	if (emptyTileIndex / puzzleSize > 0)
+		possibleSwaps.push_back(emptyTileIndex - puzzleSize);
+	if (emptyTileIndex / puzzleSize < puzzleSize - 1)
+		possibleSwaps.push_back(emptyTileIndex + puzzleSize);
 
 	std::random_device rd;
-	std::mt19937 g(rd());
-	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
+	std::mt19937 generator(rd());
+	int swapIndex = possibleSwaps[std::uniform_int_distribution<>(0, possibleSwaps.size() - 1)(generator)];
 
-	std::swap(p[idx], p[swi]);
+	std::swap(puzzle[emptyTileIndex], puzzle[swapIndex]);
 }
 
-std::vector<int> makeGoal(int s)
+std::vector<int> makeGoal(int puzzleSize)
 {
-	int ts = s * s;
-	std::vector<int> puzzle(ts, -1);
-	int cur = 1, x = 0, ix = 1, y = 0, iy = 0;
+	int totalTiles = puzzleSize * puzzleSize;
+	std::vector<int> puzzle(totalTiles, -1);
+	int currentValue = 1, xCoord = 0, xStep = 1, yCoord = 0, yStep = 0;
+
 	while (true)
 	{
-		puzzle[x + y * s] = cur;
-		if (cur == 0)
+		puzzle[xCoord + yCoord * puzzleSize] = currentValue;
+		if (currentValue == 0)
 			break;
-		cur++;
-		if (x + ix == s || x + ix < 0 || (ix != 0 && puzzle[x + ix + y * s] != -1))
+		currentValue++;
+		if (xCoord + xStep == puzzleSize || xCoord + xStep < 0 || (xStep != 0 && puzzle[xCoord + xStep + yCoord * puzzleSize] != -1))
 		{
-			iy = ix;
-			ix = 0;
+			yStep = xStep;
+			xStep = 0;
 		}
-		else if (y + iy == s || y + iy < 0 || (iy != 0 && puzzle[x + (y + iy) * s] != -1))
+		else if (yCoord + yStep == puzzleSize || yCoord + yStep < 0 || (yStep != 0 && puzzle[xCoord + (yCoord + yStep) * puzzleSize] != -1))
 		{
-			ix = -iy;
-			iy = 0;
+			xStep = -yStep;
+			yStep = 0;
 		}
-		x += ix;
-		y += iy;
-		if (cur == s * s)
-			cur = 0;
+		xCoord += xStep;
+		yCoord += yStep;
+		if (currentValue == totalTiles)
+			currentValue = 0;
 	}
 	return puzzle;
 }
 
-std::vector<int> makePuzzle(int size, bool isSolvable)
+std::vector<int> makePuzzle(int puzzleSize, bool isSolvable)
 {
-	std::vector<int> p = makeGoal(size);
+	std::vector<int> puzzle = makeGoal(puzzleSize);
 	for (int i = 0; i < 4096; ++i)
 	{
-		swapEmpty(p, size);
+		swapEmptyTile(puzzle, puzzleSize);
 	}
 
 	if (!isSolvable)
 	{
-		if (p[0] == 0 || p[1] == 0)
+		if (puzzle[0] == 0 || puzzle[1] == 0)
 		{
-			std::swap(p[p.size() - 1], p[p.size() - 2]);
+			std::swap(puzzle[puzzle.size() - 1], puzzle[puzzle.size() - 2]);
 		}
 		else
 		{
-			std::swap(p[0], p[1]);
+			std::swap(puzzle[0], puzzle[1]);
 		}
 	}
 
-	return p;
+	return puzzle;
 }
 
 void process_help()
