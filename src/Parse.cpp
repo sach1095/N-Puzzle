@@ -8,7 +8,7 @@ Parse::Parse(char **inputArgs)
 	this->_fileName = false;
 	this->_algo = ASTAR;
 	this->_heuristics = MANHATTAN;
-	ParseAV(inputArgs);
+	ParseArguments(inputArgs);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
 }
@@ -150,26 +150,32 @@ void Parse::showParsedContent()
 	std::cout << std::endl;
 }
 
-void swapEmptyTile(std::vector<int> &puzzle, int puzzleSize)
-{
+// Swaps the empty tile (0) with one of its adjacent tiles in the puzzle.
+// This function is used for randomizing/shuffling the puzzle.
+void swapEmptyTile(std::vector<int> &puzzle, int puzzleSize) {
 	int emptyTileIndex = std::distance(puzzle.begin(), std::find(puzzle.begin(), puzzle.end(), 0));
 	std::vector<int> possibleSwaps;
-	if (emptyTileIndex % puzzleSize > 0)
-		possibleSwaps.push_back(emptyTileIndex - 1);
-	if (emptyTileIndex % puzzleSize < puzzleSize - 1)
-		possibleSwaps.push_back(emptyTileIndex + 1);
-	if (emptyTileIndex / puzzleSize > 0)
-		possibleSwaps.push_back(emptyTileIndex - puzzleSize);
-	if (emptyTileIndex / puzzleSize < puzzleSize - 1)
-		possibleSwaps.push_back(emptyTileIndex + puzzleSize);
 
+	// Add possible swap positions (left, right, above, below) to the list if they are within the puzzle bounds.
+	if (emptyTileIndex % puzzleSize > 0)
+		possibleSwaps.push_back(emptyTileIndex - 1); // Left
+	if (emptyTileIndex % puzzleSize < puzzleSize - 1)
+		possibleSwaps.push_back(emptyTileIndex + 1); // Right
+	if (emptyTileIndex / puzzleSize > 0)
+		possibleSwaps.push_back(emptyTileIndex - puzzleSize); // Above
+	if (emptyTileIndex / puzzleSize < puzzleSize - 1)
+		possibleSwaps.push_back(emptyTileIndex + puzzleSize); // Below
+
+	// Randomly select one of the possible positions to swap with the empty tile.
 	std::random_device rd;
 	std::mt19937 generator(rd());
 	int swapIndex = possibleSwaps[std::uniform_int_distribution<>(0, possibleSwaps.size() - 1)(generator)];
 
+	// Perform the swap.
 	std::swap(puzzle[emptyTileIndex], puzzle[swapIndex]);
 }
 
+// Generates a goal state for the puzzle in a spiral pattern.
 std::vector<int> makeGoal(int puzzleSize)
 {
 	int totalTiles = puzzleSize * puzzleSize;
@@ -200,22 +206,21 @@ std::vector<int> makeGoal(int puzzleSize)
 	return puzzle;
 }
 
-std::vector<int> makePuzzle(int puzzleSize, bool isSolvable)
-{
-	std::vector<int> puzzle = makeGoal(puzzleSize);
-	for (int i = 0; i < 4096; ++i)
-	{
+// Generates a puzzle of the specified size. The puzzle can be solvable or unsolvable based on the isSolvable parameter.
+// The puzzle is initially set to the goal state and then shuffled to create the start state.
+std::vector<int> makePuzzle(int puzzleSize, bool isSolvable) {
+	std::vector<int> puzzle = makeGoal(puzzleSize); // Start with a solved puzzle.
+
+	// Shuffle the puzzle by swapping the empty tile with adjacent tiles.
+	for (int i = 0; i < 4096; ++i) {
 		swapEmptyTile(puzzle, puzzleSize);
 	}
 
-	if (!isSolvable)
-	{
-		if (puzzle[0] == 0 || puzzle[1] == 0)
-		{
+	// If the puzzle should be unsolvable, swap the first two tiles (if possible) to make it unsolvable.
+	if (!isSolvable) {
+		if (puzzle[0] == 0 || puzzle[1] == 0) {
 			std::swap(puzzle[puzzle.size() - 1], puzzle[puzzle.size() - 2]);
-		}
-		else
-		{
+		} else {
 			std::swap(puzzle[0], puzzle[1]);
 		}
 	}
@@ -226,31 +231,33 @@ std::vector<int> makePuzzle(int puzzleSize, bool isSolvable)
 void process_help()
 {
 	std::cout << "Usage :" << std::endl;
-	std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
-	std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
-	std::cout << "other flags optional :\n--algo [astar/uniform/greedy]" << std::endl;
+	std::cout << "\n./N-Puzzle [--file] [path to file]" << std::endl;
+	std::cout << "or" << std::endl;
 
-	// Explications des algorithmes
-	std::cout << " - Astar : Utilise une heuristique pour trouver le chemin le plus court vers la solution." << std::endl;
-	std::cout << " - Uniform : Explore les chemins en fonction de leur coût cumulé sans utiliser d'heuristique." << std::endl;
-	std::cout << " - Greedy : Utilise uniquement l'heuristique pour guider la recherche, sans tenir compte du coût passé." << std::endl;
+	std::cout << "./N-Puzzle [--size] [(number) size of the map] [--solvable (optional)] ['true' (default) or 'false']" << std::endl;
 
-	std::cout << "\n--heuristic [manhattan/linear/tiles]" << std::endl;
+	std::cout << "\nAdditional optional flags:" << std::endl;
+	std::cout << "--algo [astar/uniform/greedy]" << std::endl;
 
-	// Explications des heuristiques
-	std::cout << " - Manhattan : Calcule le coût en se basant sur la distance de Manhattan de chaque tuile à sa position cible." << std::endl;
-	std::cout << " - Linear : Ajoute une pénalité pour les conflits linéaires à la distance de Manhattan." << std::endl;
-	std::cout << " - Tiles : Compte le nombre de tuiles qui ne sont pas à leur emplacement correct." << std::endl;
+	std::cout << " - Astar: Uses a heuristic to find the shortest path to the solution." << std::endl;
+	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
+	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
+
+	std::cout << "--heuristic [manhattan/linear/tiles]" << std::endl;
+
+	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
+	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
+	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location." << std::endl;
 
 	exit(0);
 }
 
-void Parse::ParseAV(char **inputArgs)
+void Parse::ParseArguments(char **inputArgs)
 {
-
 	std::queue<std::string> args;
-
+	this->_isFiles = false;
 	int otherFlag = 0;
+
 	for (size_t i = 1; inputArgs[i]; i++)
 	{
 		if (strcmp(inputArgs[i], "--help") == 0)
@@ -335,7 +342,6 @@ void Parse::ParseAV(char **inputArgs)
 			throw CustomError("Error: Unrecognized args : " + args.front());
 	}
 
-	std::cout << "debug = " << this->_isFiles << std::endl;
 	if (this->_isFiles)
 	{
 		if (otherFlag != 0)

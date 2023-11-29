@@ -15,11 +15,11 @@ int main(int ac, char **av)
 
 		// Init Puzzle size
 		Puzzle::InitSizeLine(parser.getSizeline());
-		std::cout << "algo choise is : " << parser.getAlgoSelected() << std::endl;
 		Heuristics heuristicToUse = parser.getHeuristicsSelected();
 
 		if (heuristicToUse == MANHATTAN){
 			auto algo = SearchAlgo(parser.getAlgoSelected(), manhattan_distance, parser.getParsedContent());
+			algo.Solve();
 		}
 		else if (heuristicToUse == LINEAR_CONFLICT){
 			auto algo = SearchAlgo(parser.getAlgoSelected(), linear_conflict, parser.getParsedContent());
@@ -27,7 +27,7 @@ int main(int ac, char **av)
 		}
 		else if (heuristicToUse == TILES)
 		{
-				auto algo = SearchAlgo(parser.getAlgoSelected(), tiles_out_of_place, parser.getParsedContent());
+			auto algo = SearchAlgo(parser.getAlgoSelected(), tiles_out_of_place, parser.getParsedContent());
 			algo.Solve();
 		}
 	}

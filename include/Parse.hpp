@@ -28,7 +28,7 @@ public:
 
 	Parse(char **av);
 	const std::vector<int>& getParsedContent() const;
-	void ParseAV(char **av);
+	void ParseArguments(char **av);
 	void readInputFile();
 	void parseContent();
 	void showParsedContent();
