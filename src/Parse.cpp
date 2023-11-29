@@ -2,7 +2,8 @@
 #include "Custom_Error.hpp"
 #include <filesystem>
 
-Parse::Parse(char **inputArgs) {
+Parse::Parse(char **inputArgs)
+{
 	this->_isSolvable = true;
 	this->_fileName = false;
 	this->_algo = ASTAR;
@@ -12,39 +13,47 @@ Parse::Parse(char **inputArgs) {
 	this->showParsedContent();
 }
 
-const std::vector<int>& Parse::getParsedContent() const {
+const std::vector<int> &Parse::getParsedContent() const
+{
 	return this->_parsedContent;
 }
 
-Algorithm	Parse::getAlgoSelected(){
+Algorithm Parse::getAlgoSelected()
+{
 	return this->_algo;
 };
 
-Heuristics	Parse::getHeuristicsSelected(){
+Heuristics Parse::getHeuristicsSelected()
+{
 	return this->_heuristics;
 };
 
-size_t	Parse::getSizeline(){
+size_t Parse::getSizeline()
+{
 	return this->_sizeLine;
 }
 
-void Parse::readInputFile() {
-	const std::string& filePathStr = this->_fileName;
+void Parse::readInputFile()
+{
+	const std::string &filePathStr = this->_fileName;
 	std::filesystem::path filePath(filePathStr);
 
 	// Vérifier si le chemin existe et est un fichier
-	if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath)) {
+	if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath))
+	{
 		throw CustomError("Error: " + filePathStr + "doesn't correspond to any file");
 	}
 
 	std::string line;
 	std::ifstream file(filePathStr);
 
-	if (!file.is_open()) {
+	if (!file.is_open())
+	{
 		throw CustomError("Error: Can not open the file : " + filePathStr);
 	}
 
-	while (std::getline(file, line)) {
+	while (std::getline(file, line))
+	{
 		this->_content.push(std::move(line));
 	}
 
@@ -54,27 +63,33 @@ void Parse::readInputFile() {
 	file.close();
 }
 
-std::vector<std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string &s, char delim)
+{
 	std::vector<std::string> result;
 	std::stringstream ss(s);
 	std::string item;
 
-	while (getline(ss, item, delim)) {
+	while (getline(ss, item, delim))
+	{
 		result.push_back(item);
 	}
 
 	return result;
 }
 
-void Parse::parseContent() {
-	while (!this->_content.empty()) {
-		const auto& line = this->_content.front();
+void Parse::parseContent()
+{
+	while (!this->_content.empty())
+	{
+		const auto &line = this->_content.front();
 		std::vector<std::string> tokens = split(line, ' ');
 
-		for (const auto& token : tokens) {
+		for (const auto &token : tokens)
+		{
 			if (!token.empty() && token[0] == '#')
 				break;
-			else if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit)){
+			else if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit))
+			{
 				this->_parsedContent.push_back(std::stoi(token));
 			}
 			else if (!token.empty())
@@ -89,110 +104,126 @@ void Parse::parseContent() {
 	this->_parsedContent.erase(this->_parsedContent.begin());
 }
 
-void Parse::verifyPuzzle() {
+void Parse::verifyPuzzle()
+{
 
-	if (this->_sizeLine < 3) {
+	if (this->_sizeLine < 3)
+	{
 		throw CustomError("Error: Bad size map, minimum size is 3.");
 	}
 
 	size_t totalElements = this->_parsedContent.size();
 
 	// Ensure the total number of elements is consistent with the expected size of each row.
-	if (totalElements != this->_sizeLine * this->_sizeLine) {
+	if (totalElements != this->_sizeLine * this->_sizeLine)
+	{
 		throw CustomError("Error: the puzzle does not match the expected size.");
 	}
 
 	std::set<size_t> seenNumbers;
-	for (size_t num : this->_parsedContent) {
-		if (num >= totalElements) {
+	for (size_t num : this->_parsedContent)
+	{
+		if (num >= totalElements)
+		{
 			throw CustomError("Error: number (" + std::to_string(num) + ") out of range found in the puzzle.");
 		}
 		seenNumbers.insert(num);
 	}
 
-	if (seenNumbers.size() != totalElements) {
+	if (seenNumbers.size() != totalElements)
+	{
 		throw CustomError("Error: missing or duplicate numbers in the puzzle.");
 	}
 }
 
-void Parse::showParsedContent() {
+void Parse::showParsedContent()
+{
 
-	for (size_t i = 0; i < this->_parsedContent.size(); ++i) {
+	for (size_t i = 0; i < this->_parsedContent.size(); ++i)
+	{
 		std::cout << this->_parsedContent[i] << ' ';
-		if ((i + 1) % this->_sizeLine == 0) {
+		if ((i + 1) % this->_sizeLine == 0)
+		{
 			std::cout << std::endl;
 		}
 	}
 	std::cout << std::endl;
 }
 
+void swapEmpty(std::vector<int> &p, int s)
+{
+	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
+	std::vector<int> poss;
+	if (idx % s > 0)
+		poss.push_back(idx - 1);
+	if (idx % s < s - 1)
+		poss.push_back(idx + 1);
+	if (idx / s > 0)
+		poss.push_back(idx - s);
+	if (idx / s < s - 1)
+		poss.push_back(idx + s);
 
-void swapEmptyTile(std::vector<int>& puzzle, int puzzleSize) {
-	int emptyTileIndex = std::distance(puzzle.begin(), std::find(puzzle.begin(), puzzle.end(), 0));
-	std::vector<int> possibleSwaps;
-
-	// Vérifier les mouvements possibles et les ajouter à possibleSwaps
-	if (emptyTileIndex % puzzleSize > 0) // Si pas sur la première colonne
-		possibleSwaps.push_back(emptyTileIndex - 1); // Swap avec la tuile à gauche
-	if (emptyTileIndex % puzzleSize < puzzleSize - 1) // Si pas sur la dernière colonne
-		possibleSwaps.push_back(emptyTileIndex + 1); // Swap avec la tuile à droite
-	if (emptyTileIndex / puzzleSize > 0) // Si pas sur la première ligne
-		possibleSwaps.push_back(emptyTileIndex - puzzleSize); // Swap avec la tuile au-dessus
-	if (emptyTileIndex / puzzleSize < puzzleSize - 1) // Si pas sur la dernière ligne
-		possibleSwaps.push_back(emptyTileIndex + puzzleSize); // Swap avec la tuile en-dessous
-
-	// Choisir un mouvement aléatoire parmi les mouvements possibles
 	std::random_device rd;
-	std::mt19937 generator(rd());
-	int swapWithIndex = possibleSwaps[std::uniform_int_distribution<int>(0, possibleSwaps.size() - 1)(generator)];
+	std::mt19937 g(rd());
+	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
 
-	// Échanger la tuile vide avec la tuile choisie
-	std::swap(puzzle[emptyTileIndex], puzzle[swapWithIndex]);
+	std::swap(p[idx], p[swi]);
 }
 
-std::vector<int> makeGoal(int puzzleSize) {
-    int totalTiles = puzzleSize * puzzleSize;
-    std::vector<int> puzzle;
-
-    // Remplir le puzzle avec des nombres de 1 à puzzleSize*puzzleSize - 1
-    for (int i = 1; i < totalTiles; ++i) {
-        puzzle.push_back(i);
-    }
-
-    // Ajouter 0 pour la tuile vide (dernière case)
-    puzzle.push_back(0);
-
-    return puzzle;
-}
-
-std::vector<int> makePuzzle(int size, bool isSolvable) {
-	std::cout << "debug Start" << std::endl;
-	std::vector<int> puzzle = makeGoal(size);
-	for (size_t i = 0; i < puzzle.size(); ++i) {
-		std::cout << puzzle[i] << ' ';
-		if ((i + 1) % size == 0) {
-			std::cout << std::endl;
+std::vector<int> makeGoal(int s)
+{
+	int ts = s * s;
+	std::vector<int> puzzle(ts, -1);
+	int cur = 1, x = 0, ix = 1, y = 0, iy = 0;
+	while (true)
+	{
+		puzzle[x + y * s] = cur;
+		if (cur == 0)
+			break;
+		cur++;
+		if (x + ix == s || x + ix < 0 || (ix != 0 && puzzle[x + ix + y * s] != -1))
+		{
+			iy = ix;
+			ix = 0;
 		}
-	}
-	std::cout << std::endl;
-	std::cout << "debug afther goal" << std::endl;
-	for (int i = 0; i < 4096; ++i) {
-		swapEmptyTile(puzzle, size);
-	}
-	std::cout << "debug afther shit" << std::endl;
-
-	if (!isSolvable) {
-		if (puzzle[0] == 0 || puzzle[1] == 0) {
-			std::swap(puzzle[puzzle.size() - 1], puzzle[puzzle.size() - 2]);
-		} else {
-			std::swap(puzzle[0], puzzle[1]);
+		else if (y + iy == s || y + iy < 0 || (iy != 0 && puzzle[x + (y + iy) * s] != -1))
+		{
+			ix = -iy;
+			iy = 0;
 		}
+		x += ix;
+		y += iy;
+		if (cur == s * s)
+			cur = 0;
 	}
-
 	return puzzle;
 }
 
-void	process_help() {
+std::vector<int> makePuzzle(int size, bool isSolvable)
+{
+	std::vector<int> p = makeGoal(size);
+	for (int i = 0; i < 4096; ++i)
+	{
+		swapEmpty(p, size);
+	}
+
+	if (!isSolvable)
+	{
+		if (p[0] == 0 || p[1] == 0)
+		{
+			std::swap(p[p.size() - 1], p[p.size() - 2]);
+		}
+		else
+		{
+			std::swap(p[0], p[1]);
+		}
+	}
+
+	return p;
+}
+
+void process_help()
+{
 	std::cout << "Usage :" << std::endl;
 	std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
 	std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
@@ -213,12 +244,14 @@ void	process_help() {
 	exit(0);
 }
 
-void	Parse::ParseAV(char **inputArgs){
+void Parse::ParseAV(char **inputArgs)
+{
 
-	std::queue<std::string>	args;
+	std::queue<std::string> args;
 
-	int	otherFlag = 0;
-	for (size_t i = 1; inputArgs[i]; i++){
+	int otherFlag = 0;
+	for (size_t i = 1; inputArgs[i]; i++)
+	{
 		if (strcmp(inputArgs[i], "--help") == 0)
 			process_help();
 		args.push(inputArgs[i]);
@@ -239,11 +272,13 @@ void	Parse::ParseAV(char **inputArgs){
 				this->_sizeLine = static_cast<size_t>(resultCast);
 				args.pop();
 			}
-			catch(const std::exception& e){
+			catch (const std::exception &e)
+			{
 				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value needs to be a number and bigger than 2.");
 			}
 		}
-		else if (args.front() == "--solvable"){
+		else if (args.front() == "--solvable")
+		{
 			args.pop();
 			otherFlag++;
 			if (args.empty())
@@ -256,7 +291,8 @@ void	Parse::ParseAV(char **inputArgs){
 				throw CustomError("Error: Bad argument for --solvable, is need to be true or false.");
 			args.pop();
 		}
-		else if (args.front() == "--file"){
+		else if (args.front() == "--file")
+		{
 			args.pop();
 			if (args.empty())
 				throw CustomError("Error: No given argument for --file");
@@ -264,7 +300,8 @@ void	Parse::ParseAV(char **inputArgs){
 			this->_isFiles = true;
 			args.pop();
 		}
-		else if (args.front() == "--algo"){
+		else if (args.front() == "--algo")
+		{
 			args.pop();
 			if (args.empty())
 				throw CustomError("Error: No given argument for --algo");
@@ -278,7 +315,8 @@ void	Parse::ParseAV(char **inputArgs){
 				throw CustomError("Error: Unrecognized args for --algo, valide choose is [astar/uniform/greedy]");
 			args.pop();
 		}
-		else if (args.front() == "--heuristic"){
+		else if (args.front() == "--heuristic")
+		{
 			args.pop();
 			if (args.empty())
 				throw CustomError("Error: No given argument for --heuristic");
@@ -297,13 +335,15 @@ void	Parse::ParseAV(char **inputArgs){
 	}
 
 	std::cout << "debug = " << this->_isFiles << std::endl;
-	if (this->_isFiles){
+	if (this->_isFiles)
+	{
 		if (otherFlag != 0)
-		throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
+			throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
 		this->readInputFile();
 		this->parseContent();
 	}
-	else {
+	else
+	{
 		if (this->_sizeLine < 2)
 			throw CustomError("Error: Bad argument for --size, the minimum for a map size is 3");
 		this->_parsedContent = makePuzzle(this->_sizeLine, this->_isSolvable);

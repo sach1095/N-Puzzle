@@ -2,17 +2,17 @@
 #include "SearchAlgo.hpp"
 
 SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-                       std::vector<int> puzzleNumbers)
-                : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(Puzzle::GetSolution())
+											 std::vector<int> puzzleNumbers)
+		: AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(Puzzle::GetSolution())
 {
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
-    this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
-	0, this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetMapSolution()));
+	this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
+															 0, this->HeuristicFunction(puzzleNumbers, Puzzle::GetSizeLine(), Puzzle::GetMapSolution()));
 }
 
-std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost)
+std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_t newPathCost)
 {
 	std::vector<Puzzle> neighbors;
 	const size_t zeroPositon = currentPuzzle.GetPositionZero();
@@ -46,13 +46,13 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(),  &currentPuzzle, DOWN, newPathCost, 0);
+		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(), &currentPuzzle, DOWN, newPathCost, 0);
 	}
 
 	return neighbors;
 }
 
-void SearchAlgo::PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet)
+void SearchAlgo::PrintSolution(const Puzzle &solution, size_t nbrLoop, size_t maxSizeClosedSet)
 {
 	std::cout << "Find a solution" << std::endl;
 	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
@@ -83,9 +83,9 @@ void SearchAlgo::PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t ma
 void deleteConsoleNchar(size_t nchar)
 {
 	std::cout << std::string(nchar, '\b')
-			  << std::string(nchar, ' ')
-			  << std::string(nchar, '\b')
-			  << std::flush;
+						<< std::string(nchar, ' ')
+						<< std::string(nchar, '\b')
+						<< std::flush;
 }
 
 // Print waiting message if needed or else erase it
@@ -132,7 +132,7 @@ void SearchAlgo::Solve()
 
 	while (!this->OpenedSet.empty())
 	{
-		auto& top = *this->OpenedSet.top();
+		auto &top = *this->OpenedSet.top();
 		this->OpenedSet.pop();
 
 		// Find a solution : print details
@@ -149,7 +149,7 @@ void SearchAlgo::Solve()
 		// Compute algorithm
 		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;
 		// Loop over neightbors
-		for (auto& neighbor : SearchAlgo::FindNeighbors(top, pathCostUpdated))
+		for (auto &neighbor : SearchAlgo::FindNeighbors(top, pathCostUpdated))
 		{
 			auto foundClosedSet = this->ClosedSet.find(neighbor);
 
@@ -169,9 +169,9 @@ void SearchAlgo::Solve()
 			}
 			// If a better path is found, update the set and put in in the OpenSet
 			else if (this->AlgorithmUsed != GREEDY &&
-					 neighbor.GetPathCost() < foundClosedSet->GetPathCost())
+							 neighbor.GetPathCost() < foundClosedSet->GetPathCost())
 			{
-				auto& mutableSet = const_cast<Puzzle&>(*foundClosedSet);
+				auto &mutableSet = const_cast<Puzzle &>(*foundClosedSet);
 				// Update previous puzzle
 				mutableSet.SetPreviousPuzzle(&top);
 				mutableSet.SetLastMove(neighbor.GetLastMove());
