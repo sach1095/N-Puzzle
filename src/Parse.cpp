@@ -38,7 +38,7 @@ void Parse::readInputFile()
 	const std::string &filePathStr = this->_fileName;
 	std::filesystem::path filePath(filePathStr);
 
-	// Vérifier si le chemin existe et est un fichier
+	// Check if the path exists and is a file
 	if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath))
 	{
 		throw CustomError("Error: " + filePathStr + "doesn't correspond to any file");
@@ -176,33 +176,27 @@ void swapEmptyTile(std::vector<int> &puzzle, int puzzleSize) {
 }
 
 // Generates a goal state for the puzzle in a spiral pattern.
-std::vector<int> makeGoal(int puzzleSize)
-{
+std::vector<int> makeGoal(int puzzleSize) {
 	int totalTiles = puzzleSize * puzzleSize;
-	std::vector<int> puzzle(totalTiles, -1);
+	std::vector<int> puzzle(totalTiles, 0);
 	int currentValue = 1, xCoord = 0, xStep = 1, yCoord = 0, yStep = 0;
 
-	while (true)
-	{
+	while (currentValue < totalTiles) {
 		puzzle[xCoord + yCoord * puzzleSize] = currentValue;
-		if (currentValue == 0)
-			break;
 		currentValue++;
-		if (xCoord + xStep == puzzleSize || xCoord + xStep < 0 || (xStep != 0 && puzzle[xCoord + xStep + yCoord * puzzleSize] != -1))
-		{
+
+		if (xCoord + xStep == puzzleSize || xCoord + xStep < 0 || (xStep != 0 && puzzle[xCoord + xStep + yCoord * puzzleSize] != 0)) {
 			yStep = xStep;
 			xStep = 0;
-		}
-		else if (yCoord + yStep == puzzleSize || yCoord + yStep < 0 || (yStep != 0 && puzzle[xCoord + (yCoord + yStep) * puzzleSize] != -1))
-		{
+		} else if (yCoord + yStep == puzzleSize || yCoord + yStep < 0 || (yStep != 0 && puzzle[xCoord + (yCoord + yStep) * puzzleSize] != 0)) {
 			xStep = -yStep;
 			yStep = 0;
 		}
+
 		xCoord += xStep;
 		yCoord += yStep;
-		if (currentValue == totalTiles)
-			currentValue = 0;
 	}
+
 	return puzzle;
 }
 
