@@ -23,7 +23,7 @@ public:
     bool operator==(const Puzzle& rhs) const;
     friend std::ostream& operator<<(std::ostream& os, const Puzzle& puzzle);
     static const Puzzle& GetSolution();
-	static const std::unordered_map<int, size_t> GetMapSolution();
+	static const std::vector<size_t>& GetVecSolution();
 
     // Getter / Setter
     static size_t GetSizeLine();

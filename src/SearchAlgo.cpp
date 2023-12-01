@@ -8,8 +8,8 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
-	this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
-															 0, this->HeuristicFunction(puzzleNumbers, Puzzle::GetSizeLine(), Puzzle::GetMapSolution()));
+    this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
+	0, this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetVecSolution()));
 }
 
 std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_t newPathCost)
@@ -191,7 +191,7 @@ bool SearchAlgo::Solve()
 				if (this->AlgorithmUsed != UNIFORM_COST)
 				{
 					// Compute missing heuristic
-					size_t neighborHeuristic = this->HeuristicFunction(neighbor.GetNumbers(), Puzzle::GetSizeLine(), Puzzle::GetMapSolution());
+					size_t neighborHeuristic = this->HeuristicFunction(neighbor.GetNumbers(), Puzzle::GetSizeLine(), Puzzle::GetVecSolution());
 					neighbor.SetHeuristicValue(neighborHeuristic);
 					neighbor.SetTotalCost(neighborHeuristic + neighbor.GetPathCost());
 				}

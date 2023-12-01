@@ -88,19 +88,20 @@ const Puzzle& Puzzle::GetSolution()
 }
 
 /**
- * Return map with the value of the puzzle piece as key and the position as output
+ * Return a vector with the value of the puzzle piece as input and the position as output
 */
-const std::unordered_map<int, size_t> Puzzle::GetMapSolution()
+const std::vector<size_t>& Puzzle::GetVecSolution()
 {
-	static std::unordered_map<int, size_t> mapSolution;
+	static std::vector<size_t> vecSolution;
 
-	if (mapSolution.empty())
+	if (vecSolution.empty())
 	{
-		auto& solution = Puzzle::GetSolution();
-		for (size_t i = 0; i < solution.GetNumbers().size(); ++i)
-			mapSolution.insert({solution.GetNumbers()[i], i});
+		vecSolution = std::vector<size_t>(Puzzle::GetSizeLine() * Puzzle::GetSizeLine());
+		auto& solution = Puzzle::GetSolution().GetNumbers();
+		for (size_t i = 0; i < solution.size(); ++i)
+			vecSolution[solution[i]] = i;
 	}
-	return mapSolution;
+	return vecSolution;
 }
 
 
