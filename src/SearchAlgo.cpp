@@ -90,33 +90,46 @@ void deleteConsoleNchar(size_t nchar)
 }
 
 // Print waiting message if needed or else erase it
-void handleWaitingMessage(bool needPrint)
+inline void handleWaitingMessage(bool needPrint, size_t nbrLoop = 0,
+								 size_t currentHeuristic = 0, size_t sizeOpenedSet = 0, size_t sizeClosedSet = 0)
 {
 	static std::string waitingMsg;
 	static auto baseTime = steady_clock::now();
+	static int count = 0;
+	static auto startTime = steady_clock::now();
 
 	if (!needPrint)
-	{
 		deleteConsoleNchar(waitingMsg.size());
-		return;
-	}
-
-	if (waitingMsg.empty())
+	else
 	{
-		waitingMsg = "Computing";
-		std::cout << waitingMsg << std::flush;
-	}
-
-	if (duration_cast<milliseconds>(steady_clock::now() - baseTime).count() > 1000)
-	{
-		baseTime = steady_clock::now();
-
-		deleteConsoleNchar(waitingMsg.size());
-		if (waitingMsg.size() == std::string("Computing...").size())
+		if (waitingMsg.empty())
+		{
 			waitingMsg = "Computing";
-		else
-			waitingMsg += '.';
-		std::cout << waitingMsg << std::flush;
+			std::cout << waitingMsg << std::flush;
+		}
+
+		if (duration_cast<milliseconds>(steady_clock::now() - baseTime).count() > 1000)
+		{
+			baseTime = steady_clock::now();
+			if (++count % 5 == 0)
+			{
+				deleteConsoleNchar(waitingMsg.size());
+				auto duration = duration_cast<milliseconds>(baseTime - startTime);
+				std::cout << GREEN << "****************** Temporary State (" << duration.count() / 1000.
+								   << "s)******************" << RESET << std::endl;
+				std::cout << "Number iterations    : " << BOLDRED << nbrLoop            << RESET << std::endl;
+				std::cout << "Minimum heuristic    : " << BOLDRED << currentHeuristic   << RESET << std::endl;
+				std::cout << "Size of the queue    : " << BOLDRED << sizeOpenedSet      << RESET << std::endl;
+				std::cout << "Number puzzle loaded : " << BOLDRED << sizeClosedSet      << RESET << std::endl;
+				std::cout << std::endl;
+			}
+			deleteConsoleNchar(waitingMsg.size());
+			if (waitingMsg.size() == std::string("Computing...").size())
+				waitingMsg = "Computing";
+			else
+				waitingMsg += '.';
+			std::cout << waitingMsg << std::flush;
+		}
 	}
 }
 
@@ -146,7 +159,7 @@ bool SearchAlgo::Solve()
 		}
 
 		// Output message than the program is computing
-		handleWaitingMessage(true);
+		handleWaitingMessage(true, nbrLoop, top.GetHeuristicValue(), this->OpenedSet.size(), sizeClosedSet);
 
 		// Compute algorithm
 		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;

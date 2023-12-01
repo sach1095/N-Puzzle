@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Color.hpp"
 #include "Enum.hpp"
 #include "Heuristics.hpp"
 #include "Puzzle.hpp"
