@@ -6,6 +6,7 @@
 #include <memory>
 #include <queue>
 #include <unordered_set>
+#include <set>
 #include <vector>
 
 #include "Color.hpp"
@@ -17,8 +18,7 @@
 using namespace std::chrono;
 
 // Hash function for Puzzle
-template <>
-struct std::hash<Puzzle>
+struct HashPuzzle
 {
 	std::size_t operator()(const Puzzle& puzzle) const noexcept
 	{
@@ -26,7 +26,8 @@ struct std::hash<Puzzle>
 	}
 };
 
-using setIterator = std::unordered_set<Puzzle>::iterator;
+using setType = std::unordered_set<Puzzle, HashPuzzle>;
+using setIterator = setType::iterator;
 
 // Comparaison structure for puzzle
 struct ComparePuzzleCost
@@ -49,6 +50,7 @@ public:
 	void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
 	void setReverseMoveSolution(std::vector<Move> reverseMoveSolution) {this->reverseMoveSolution = reverseMoveSolution;};
 	std::vector<Move> getReverseMoveSolution(){return reverseMoveSolution;};
+	Puzzle SwapPuzzle(const Puzzle& puzzle, size_t newZeroPos, size_t newPathCost, Move move) const;
 
 private:
 
@@ -62,7 +64,7 @@ private:
     Puzzle					     InitPuzzlePtr;
     std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost> OpenedSet;
     // Use the hash function of Puzzle
-    std::unordered_set<Puzzle>	ClosedSet;
+    setType						ClosedSet;
     size_t 						MaxSizeClosedSet = 0;
     size_t 						MaxSizeOpenedSet = 0;
 	const Puzzle				&Solution;

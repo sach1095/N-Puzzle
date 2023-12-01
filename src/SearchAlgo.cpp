@@ -33,6 +33,21 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 	this->OpenedSet = std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost>(ComparePuzzleCost(), std::move(openedSetMemory));
 }
 
+Puzzle SearchAlgo::SwapPuzzle(const Puzzle& puzzle, size_t newZeroPos, size_t newPathCost, Move move) const
+{
+	size_t zeroPos = puzzle.GetPositionZero();
+	const auto &currentVec = puzzle.GetNumbers();
+
+	// Compute new hash
+	int newHash = this->Hasher.Swap(puzzle.GetHashValue(), zeroPos, currentVec[zeroPos], newZeroPos, currentVec[newZeroPos]);
+
+	// Create new vector
+	std::vector<int> newVecPuzzle = puzzle.GetNumbers();
+	std::swap(newVecPuzzle[zeroPos], newVecPuzzle[newZeroPos]);
+
+	return Puzzle(newVecPuzzle, newZeroPos, &puzzle, move, newPathCost, 0, newHash);
+}
+
 std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost) const
 {
 	std::vector<Puzzle> neighbors;
@@ -40,67 +55,19 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_
 
 	// Left
 	if (zeroPositon % Puzzle::GetSizeLine() != 0)
-	{
-		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
-		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - 1]);
-
-		// Compute new hash
-		int i1 = zeroPositon;
-		int j1 = leftMoveCopy[zeroPositon];
-		int i2 = zeroPositon - 1;
-		int j2 = leftMoveCopy[zeroPositon - 1];
-		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
-
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - 1, &currentPuzzle, LEFT, newPathCost, 0, newHash);
-	}
+		neighbors.push_back(SwapPuzzle(currentPuzzle, zeroPositon - 1, newPathCost, LEFT));
 
 	// Right
 	if (zeroPositon % Puzzle::GetSizeLine() != Puzzle::GetSizeLine() - 1)
-	{
-		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
-		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + 1]);
-
-		// Compute new hash
-		int i1 = zeroPositon;
-		int j1 = leftMoveCopy[zeroPositon];
-		int i2 = zeroPositon + 1;
-		int j2 = leftMoveCopy[zeroPositon + 1];
-		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
-
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + 1, &currentPuzzle, RIGHT, newPathCost, 0, newHash);
-	}
+		neighbors.push_back(SwapPuzzle(currentPuzzle, zeroPositon + 1, newPathCost, RIGHT));
 
 	// Up
 	if (zeroPositon / Puzzle::GetSizeLine() != 0)
-	{
-		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
-		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - Puzzle::GetSizeLine()]);
-
-		// Compute new hash
-		int i1 = zeroPositon;
-		int j1 = leftMoveCopy[zeroPositon];
-		int i2 = zeroPositon - Puzzle::GetSizeLine();
-		int j2 = leftMoveCopy[zeroPositon - Puzzle::GetSizeLine()];
-		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
-
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - Puzzle::GetSizeLine(), &currentPuzzle, UP, newPathCost, 0, newHash);
-	}
+		neighbors.push_back(SwapPuzzle(currentPuzzle, zeroPositon - Puzzle::GetSizeLine(), newPathCost, UP));
 
 	// Down
 	if (zeroPositon / Puzzle::GetSizeLine() != Puzzle::GetSizeLine() - 1)
-	{
-		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
-		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()]);
-
-		// Compute new hash
-		int i1 = zeroPositon;
-		int j1 = leftMoveCopy[zeroPositon];
-		int i2 = zeroPositon + Puzzle::GetSizeLine();
-		int j2 = leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()];
-		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
-
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(),  &currentPuzzle, DOWN, newPathCost, 0, newHash);
-	}
+		neighbors.push_back(SwapPuzzle(currentPuzzle, zeroPositon + Puzzle::GetSizeLine(), newPathCost, DOWN));
 
 	return neighbors;
 }
