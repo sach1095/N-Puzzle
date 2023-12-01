@@ -65,6 +65,7 @@ void SearchAlgo::PrintSolution(const Puzzle &solution, size_t nbrLoop, size_t ma
 		lastValue = lastValue->GetPreviousPuzzle();
 	}
 	std::cout << "Numbers of moves to the solution : " << reverseMoveSolution.size() << std::endl;
+	this->setReverseMoveSolution(reverseMoveSolution);
 	for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
 	{
 		if (*it == LEFT)
@@ -119,7 +120,7 @@ void handleWaitingMessage(bool needPrint)
 	}
 }
 
-void SearchAlgo::Solve()
+bool SearchAlgo::Solve()
 {
 
 	// Init algorithm
@@ -140,7 +141,7 @@ void SearchAlgo::Solve()
 		{
 			handleWaitingMessage(false);
 			PrintSolution(top, nbrLoop, maxSizeClosedSet);
-			return;
+			return true;
 		}
 
 		// Output message than the program is computing
@@ -193,4 +194,5 @@ void SearchAlgo::Solve()
 	std::cout << "Unsolvable puzzle" << std::endl;
 	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
 	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
+	return false;
 }

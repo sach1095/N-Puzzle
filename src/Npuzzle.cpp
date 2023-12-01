@@ -1,6 +1,7 @@
 #include "Custom_Error.hpp"
 #include "Parse.hpp"
 #include "SearchAlgo.hpp"
+#include "VisualiserSolution.cpp"
 
 // TODO Handle different heuristic function + different algorithm used
 //! For now only using Manathan-distance as heuristic with A* algo
@@ -18,7 +19,8 @@ int main(int ac, char **av)
 		heuristic heuristicToUse = parser.getHeuristicFunction();
 
 		auto algo = SearchAlgo(parser.getAlgoSelected(), heuristicToUse, parser.getParsedContent());
-		algo.Solve();
+		if (algo.Solve() && parser.getVisualiseur())
+			reconstructAndDisplayPath(parser.getParsedContent(), parser.getSizeline(), algo.getReverseMoveSolution());
 	}
 	catch(const CustomError& e)
 	{

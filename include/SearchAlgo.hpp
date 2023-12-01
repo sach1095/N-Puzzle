@@ -45,15 +45,18 @@ public:
 	SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 			   std::vector<int> puzzleNumbers);
 
-    void Solve();
+    bool Solve();
     static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
-	static void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
+	void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
+	void setReverseMoveSolution(std::vector<Move> reverseMoveSolution) {this->reverseMoveSolution = reverseMoveSolution;};
+	std::vector<Move> getReverseMoveSolution(){return reverseMoveSolution;};
 
 private:
 
 	// Parameters
 	Algorithm                   AlgorithmUsed;
 	heuristic                   HeuristicFunction;
+	std::vector<Move>           reverseMoveSolution;
 
     // Intern members
     Puzzle					     InitPuzzlePtr;

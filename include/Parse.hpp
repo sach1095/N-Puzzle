@@ -20,6 +20,7 @@ private:
 	Algorithm						_algo;
 	heuristic						_heuristics;
 	bool							_isSolvable;
+	bool							_visualiseur;
 	bool							_isFiles;
 	std::queue<std::string>			_content;
 	std::string						_fileName;
@@ -38,7 +39,7 @@ public:
 	Algorithm getAlgoSelected();
 	void setHeuristicFunction(heuristic func);
 	heuristic getHeuristicFunction();
-
+	bool getVisualiseur();
 };
 
 #endif

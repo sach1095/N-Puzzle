@@ -7,6 +7,7 @@ Parse::Parse(char **inputArgs)
 {
 	this->_isSolvable = true;
 	this->_fileName = false;
+	this->_visualiseur = false;
 	this->_algo = ASTAR;
 	this->setHeuristicFunction(manhattan_distance);
 	ParseArguments(inputArgs);
@@ -37,6 +38,9 @@ heuristic Parse::getHeuristicFunction()
 size_t Parse::getSizeline()
 {
 	return this->_sizeLine;
+}
+bool Parse::getVisualiseur(){
+	return this->_visualiseur;
 }
 
 void Parse::readInputFile()
@@ -175,8 +179,9 @@ void process_help()
 
 	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
 	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
-	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location." << std::endl;
+	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
 
+	std::cout << "--visualiser (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
 	exit(0);
 }
 
@@ -235,6 +240,11 @@ void Parse::ParseArguments(char **inputArgs)
 			this->_fileName = args.front();
 			this->_isFiles = true;
 			args.pop();
+		}
+		else if (args.front() == "--visualiser")
+		{
+			args.pop();
+			this->_visualiseur = true;
 		}
 		else if (args.front() == "--algo")
 		{
