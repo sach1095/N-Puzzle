@@ -12,12 +12,13 @@
 #include <iomanip>
 #include <cstring>
 #include "Enum.hpp"
+#include "Heuristics.hpp"
 
 class Parse {
 private:
 	size_t							_sizeLine;
 	Algorithm						_algo;
-	Heuristics						_heuristics;
+	heuristic						_heuristics;
 	bool							_isSolvable;
 	bool							_isFiles;
 	std::queue<std::string>			_content;
@@ -35,7 +36,9 @@ public:
 	void verifyPuzzle();
 	size_t getSizeline();
 	Algorithm getAlgoSelected();
-	Heuristics getHeuristicsSelected();
+	void setHeuristicFunction(heuristic func);
+	heuristic getHeuristicFunction();
+
 };
 
 #endif

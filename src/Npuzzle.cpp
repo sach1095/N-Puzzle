@@ -15,21 +15,10 @@ int main(int ac, char **av)
 
 		// Init Puzzle size
 		Puzzle::InitSizeLine(parser.getSizeline());
-		Heuristics heuristicToUse = parser.getHeuristicsSelected();
+		heuristic heuristicToUse = parser.getHeuristicFunction();
 
-		if (heuristicToUse == MANHATTAN){
-			auto algo = SearchAlgo(parser.getAlgoSelected(), manhattan_distance, parser.getParsedContent());
-			algo.Solve();
-		}
-		else if (heuristicToUse == LINEAR_CONFLICT){
-			auto algo = SearchAlgo(parser.getAlgoSelected(), linear_conflict, parser.getParsedContent());
-			algo.Solve();
-		}
-		else if (heuristicToUse == TILES)
-		{
-			auto algo = SearchAlgo(parser.getAlgoSelected(), tiles_out_of_place, parser.getParsedContent());
-			algo.Solve();
-		}
+		auto algo = SearchAlgo(parser.getAlgoSelected(), heuristicToUse, parser.getParsedContent());
+		algo.Solve();
 	}
 	catch(const CustomError& e)
 	{

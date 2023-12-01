@@ -8,12 +8,6 @@ enum Algorithm {
 	UNIFORM_COST = 2,
 };
 
-enum Heuristics {
-	MANHATTAN = 0,
-	LINEAR_CONFLICT = 1,
-	TILES = 2,
-};
-
 enum Move {
 	LEFT = 0,
 	RIGHT = 1,
