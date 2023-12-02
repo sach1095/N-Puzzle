@@ -8,11 +8,13 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
-    this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE,
-	0, this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetVecSolution()));
+	// Create the init puzzle
+    this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE, 0,
+								 this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetVecSolution()),
+								 this->Hasher.Hash(puzzleNumbers));
 }
 
-std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_t newPathCost)
+std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost) const
 {
 	std::vector<Puzzle> neighbors;
 	const size_t zeroPositon = currentPuzzle.GetPositionZero();
@@ -22,7 +24,15 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - 1]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - 1, &currentPuzzle, LEFT, newPathCost, 0);
+
+		// Compute new hash
+		int i1 = zeroPositon;
+		int j1 = leftMoveCopy[zeroPositon];
+		int i2 = zeroPositon - 1;
+		int j2 = leftMoveCopy[zeroPositon - 1];
+		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
+
+		neighbors.emplace_back(leftMoveCopy, zeroPositon - 1, &currentPuzzle, LEFT, newPathCost, 0, newHash);
 	}
 
 	// Right
@@ -30,7 +40,15 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + 1]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + 1, &currentPuzzle, RIGHT, newPathCost, 0);
+
+		// Compute new hash
+		int i1 = zeroPositon;
+		int j1 = leftMoveCopy[zeroPositon];
+		int i2 = zeroPositon + 1;
+		int j2 = leftMoveCopy[zeroPositon + 1];
+		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
+
+		neighbors.emplace_back(leftMoveCopy, zeroPositon + 1, &currentPuzzle, RIGHT, newPathCost, 0, newHash);
 	}
 
 	// Up
@@ -38,7 +56,15 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon - Puzzle::GetSizeLine()]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon - Puzzle::GetSizeLine(), &currentPuzzle, UP, newPathCost, 0);
+
+		// Compute new hash
+		int i1 = zeroPositon;
+		int j1 = leftMoveCopy[zeroPositon];
+		int i2 = zeroPositon - Puzzle::GetSizeLine();
+		int j2 = leftMoveCopy[zeroPositon - Puzzle::GetSizeLine()];
+		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
+
+		neighbors.emplace_back(leftMoveCopy, zeroPositon - Puzzle::GetSizeLine(), &currentPuzzle, UP, newPathCost, 0, newHash);
 	}
 
 	// Down
@@ -46,7 +72,15 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_
 	{
 		std::vector<int> leftMoveCopy = currentPuzzle.GetNumbers();
 		std::swap(leftMoveCopy[zeroPositon], leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()]);
-		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(), &currentPuzzle, DOWN, newPathCost, 0);
+
+		// Compute new hash
+		int i1 = zeroPositon;
+		int j1 = leftMoveCopy[zeroPositon];
+		int i2 = zeroPositon + Puzzle::GetSizeLine();
+		int j2 = leftMoveCopy[zeroPositon + Puzzle::GetSizeLine()];
+		int newHash = this->Hasher.Swap(currentPuzzle.GetHashValue(), i1, j1, i2, j2);
+
+		neighbors.emplace_back(leftMoveCopy, zeroPositon + Puzzle::GetSizeLine(),  &currentPuzzle, DOWN, newPathCost, 0, newHash);
 	}
 
 	return neighbors;
@@ -181,7 +215,7 @@ bool SearchAlgo::Solve()
 		// Compute algorithm
 		size_t pathCostUpdated = (this->AlgorithmUsed == GREEDY) ? 0 : top.GetPathCost() + 1;
 		// Loop over neightbors
-		for (auto &neighbor : SearchAlgo::FindNeighbors(top, pathCostUpdated))
+		for (auto& neighbor : this->FindNeighbors(top, pathCostUpdated))
 		{
 			auto foundClosedSet = this->ClosedSet.find(neighbor);
 

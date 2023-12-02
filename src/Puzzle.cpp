@@ -5,10 +5,11 @@
 // Initialize static var
 size_t Puzzle::SizeLine = 0;
 
-
 Puzzle::Puzzle(const std::vector<int>& vecNumbers, size_t positionZero,
-			   const Puzzle* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic) :
+			   const Puzzle* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic,
+			   int hashValue) :
 			   Numbers(vecNumbers), PositionZero(positionZero), PreviousPuzzle(previousPuzzle), LastMove(lastMove),
+			   HashValue(hashValue),
 			   PathCost(pathCost), HeuristicValue(heuristic), TotalCost(pathCost + heuristic)
 {
 	if (!Puzzle::SizeLine)
@@ -81,7 +82,7 @@ const Puzzle& Puzzle::GetSolution()
 		auto itZero = std::find(result.begin(), result.end(), value - 1);
 		*itZero = 0;
 
-		solution = Puzzle(result, std::distance(result.begin(), itZero), nullptr, NONE, 0, 0);
+		solution = Puzzle(result, std::distance(result.begin(), itZero), nullptr, NONE, 0, 0, 0);
 	}
 
 	return solution;

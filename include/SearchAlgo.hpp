@@ -12,6 +12,7 @@
 #include "Enum.hpp"
 #include "Heuristics.hpp"
 #include "Puzzle.hpp"
+#include "ZobristHash.hpp"
 
 using namespace std::chrono;
 
@@ -21,10 +22,7 @@ struct std::hash<Puzzle>
 {
 	std::size_t operator()(const Puzzle& puzzle) const noexcept
 	{
-		size_t hash = 0;
-		for (int nb : puzzle.GetNumbers())
-			hash = nb ^ (hash << 1);
-		return hash;
+		return puzzle.GetHashValue();
 	}
 };
 
@@ -47,7 +45,7 @@ public:
 			   std::vector<int> puzzleNumbers);
 
     bool Solve();
-    static std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost);
+    std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost) const;
 	void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
 	void setReverseMoveSolution(std::vector<Move> reverseMoveSolution) {this->reverseMoveSolution = reverseMoveSolution;};
 	std::vector<Move> getReverseMoveSolution(){return reverseMoveSolution;};
@@ -58,6 +56,7 @@ private:
 	Algorithm                   AlgorithmUsed;
 	heuristic                   HeuristicFunction;
 	std::vector<Move>           reverseMoveSolution;
+	ZobristHash					Hasher = ZobristHash(Puzzle::GetSizeLine() * Puzzle::GetSizeLine());
 
     // Intern members
     Puzzle					     InitPuzzlePtr;
