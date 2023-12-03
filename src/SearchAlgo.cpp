@@ -128,11 +128,12 @@ bool SearchAlgo::Solve()
 	this->OpenedSet.push(it);
 
 	// Counters
-	size_t nbrLoop = 1;
-	size_t maxSizeClosedSet = 1;
+	size_t nbrLoop = 0;
+	size_t sizeClosedSet = 0;
 
 	while (!this->OpenedSet.empty())
 	{
+		nbrLoop++;
 		auto &top = *this->OpenedSet.top();
 		this->OpenedSet.pop();
 
@@ -140,7 +141,7 @@ bool SearchAlgo::Solve()
 		if (top == this->Solution)
 		{
 			handleWaitingMessage(false);
-			PrintSolution(top, nbrLoop, maxSizeClosedSet);
+			PrintSolution(top, nbrLoop, sizeClosedSet);
 			return true;
 		}
 
@@ -167,6 +168,7 @@ bool SearchAlgo::Solve()
 				// Insert element
 				auto [it, success] = this->ClosedSet.insert(std::move(neighbor));
 				this->OpenedSet.emplace(it);
+				sizeClosedSet++;
 			}
 			// If a better path is found, update the set and put in in the OpenSet
 			else if (this->AlgorithmUsed != GREEDY &&
@@ -182,17 +184,12 @@ bool SearchAlgo::Solve()
 				// Add it back to the OpenSet
 				this->OpenedSet.emplace(foundClosedSet);
 			}
-
-			// Update counters
-			nbrLoop++;
-			if (this->ClosedSet.size() > maxSizeClosedSet)
-				maxSizeClosedSet = this->ClosedSet.size();
 		}
 	}
 
 	handleWaitingMessage(false);
 	std::cout << "Unsolvable puzzle" << std::endl;
 	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
-	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
+	std::cout << "Max number of states in memory : " << sizeClosedSet << std::endl;
 	return false;
 }
