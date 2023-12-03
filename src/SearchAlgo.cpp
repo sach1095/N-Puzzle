@@ -12,6 +12,25 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
     this->InitPuzzlePtr = Puzzle(puzzleNumbers, positionZero, nullptr, NONE, 0,
 								 this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetVecSolution()),
 								 this->Hasher.Hash(puzzleNumbers));
+
+	// Reserve memory
+	std::vector<setIterator> openedSetMemory;
+	if (Puzzle::GetSizeLine() == 3)
+	{
+		openedSetMemory.reserve(1e4);
+		this->ClosedSet.reserve(1e3);
+	}
+	else if (Puzzle::GetSizeLine() == 4)
+	{
+		openedSetMemory.reserve(1e6);
+		this->ClosedSet.reserve(2e6);
+	}
+	else if (Puzzle::GetSizeLine() == 5)
+	{
+		openedSetMemory.reserve(1e7);
+		this->ClosedSet.reserve(2e7);
+	}
+	this->OpenedSet = std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost>(ComparePuzzleCost(), std::move(openedSetMemory));
 }
 
 std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost) const
