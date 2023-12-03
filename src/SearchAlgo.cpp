@@ -54,9 +54,7 @@ std::vector<Puzzle> SearchAlgo::FindNeighbors(const Puzzle &currentPuzzle, size_
 
 void SearchAlgo::PrintSolution(const Puzzle &solution, size_t nbrLoop, size_t maxSizeClosedSet)
 {
-	std::cout << "Find a solution" << std::endl;
-	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
-	std::cout << "Max number of states in memory : " << maxSizeClosedSet << std::endl;
+	// Find the list of positions to go to the solution
 	const Puzzle *lastValue = &solution;
 	std::vector<Move> reverseMoveSolution;
 	while (lastValue->GetPreviousPuzzle())
@@ -64,20 +62,31 @@ void SearchAlgo::PrintSolution(const Puzzle &solution, size_t nbrLoop, size_t ma
 		reverseMoveSolution.push_back(lastValue->GetLastMove());
 		lastValue = lastValue->GetPreviousPuzzle();
 	}
-	std::cout << "Numbers of moves to the solution : " << reverseMoveSolution.size() << std::endl;
 	this->setReverseMoveSolution(reverseMoveSolution);
+
+	// Print solution
+	std::cout << BOLDGREEN 	 << "Find a solution" << RESET << std::endl;
+	std::cout << "Total number of states selected  : "  << BOLDRED << nbrLoop 					<< RESET << std::endl;
+	std::cout << "Max number of states in memory   : "   << BOLDRED << maxSizeClosedSet			<< RESET << std::endl;
+	std::cout << "Numbers of moves to the solution : " << BOLDRED << reverseMoveSolution.size() << RESET << std::endl;
+	std::cout << "List of moves : " << RESET << std::endl;
+	std::cout << "[";
 	for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
 	{
 		if (*it == LEFT)
-			std::cout << "Left ";
+			std::cout << BOLDYELLOW << "Left  " << RESET;
 		else if (*it == RIGHT)
-			std::cout << "Right ";
+			std::cout << BOLDBLUE << "Right " << RESET;
 		else if (*it == UP)
-			std::cout << "Up ";
+			std::cout << BOLDMAGENTA << " Up   " << RESET;
 		else if (*it == DOWN)
-			std::cout << "Down ";
+			std::cout << BOLDBLACK << "Down  " << RESET;
+
+		auto i = std::distance(reverseMoveSolution.rbegin(), it);
+		if ((i + 1) % 10 == 0)
+			std::cout << "\n ";
 	}
-	std::cout << std::endl;
+	std::cout << "]" << std::endl;
 }
 
 // Delete the n last char in the console
@@ -201,8 +210,8 @@ bool SearchAlgo::Solve()
 	}
 
 	handleWaitingMessage(false);
-	std::cout << "Unsolvable puzzle" << std::endl;
-	std::cout << "Total number of states selected : " << nbrLoop << std::endl;
-	std::cout << "Max number of states in memory : " << sizeClosedSet << std::endl;
+	std::cout << BOLDGREEN << "No solution found" << RESET << std::endl;
+	std::cout << "Total number of states selected : " << BOLDRED  << nbrLoop       << RESET << std::endl;
+	std::cout << "Max number of states in memory  : "  << BOLDRED  << sizeClosedSet << RESET << std::endl;
 	return false;
 }
