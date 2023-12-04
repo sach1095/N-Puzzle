@@ -3,13 +3,35 @@
 #include "GeneratorMap.cpp"
 #include <filesystem>
 
-Parse::Parse(char **inputArgs)
+void process_help()
 {
-	this->_isSolvable = true;
-	this->_fileName = false;
-	this->_visualiseur = false;
-	this->_algo = ASTAR;
-	this->setHeuristicFunction(manhattan_distance);
+	std::cout << "Usage :" << std::endl;
+	std::cout << "\n./N-Puzzle [--file] [path to file]" << std::endl;
+	std::cout << "or" << std::endl;
+
+	std::cout << "./N-Puzzle [--size] [(number) size of the map] [--solvable (optional)] ['true' (default) or 'false']" << std::endl;
+
+	std::cout << "\nAdditional optional flags:" << std::endl;
+	std::cout << "--algo [astar/uniform/greedy]" << std::endl;
+
+	std::cout << " - Astar: Uses a heuristic to find the shortest path to the solution." << std::endl;
+	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
+	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
+
+	std::cout << "--heuristic [manhattan/linear/tiles]" << std::endl;
+
+	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
+	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
+	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
+
+	std::cout << "--viewer (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
+	exit(0);
+}
+
+Parse::Parse(int ac, char **inputArgs)
+{
+	if (ac <= 1)
+		process_help();
 	ParseArguments(inputArgs);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
@@ -39,8 +61,8 @@ size_t Parse::getSizeline()
 {
 	return this->_sizeLine;
 }
-bool Parse::getVisualiseur(){
-	return this->_visualiseur;
+bool Parse::getviewer(){
+	return this->_viewer;
 }
 
 void Parse::readInputFile()
@@ -160,31 +182,6 @@ void Parse::showParsedContent()
 	std::cout << std::endl;
 }
 
-void process_help()
-{
-	std::cout << "Usage :" << std::endl;
-	std::cout << "\n./N-Puzzle [--file] [path to file]" << std::endl;
-	std::cout << "or" << std::endl;
-
-	std::cout << "./N-Puzzle [--size] [(number) size of the map] [--solvable (optional)] ['true' (default) or 'false']" << std::endl;
-
-	std::cout << "\nAdditional optional flags:" << std::endl;
-	std::cout << "--algo [astar/uniform/greedy]" << std::endl;
-
-	std::cout << " - Astar: Uses a heuristic to find the shortest path to the solution." << std::endl;
-	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
-	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
-
-	std::cout << "--heuristic [manhattan/linear/tiles]" << std::endl;
-
-	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
-	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
-	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
-
-	std::cout << "--visualiser (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
-	exit(0);
-}
-
 void Parse::ParseArguments(char **inputArgs)
 {
 	std::queue<std::string> args;
@@ -241,10 +238,10 @@ void Parse::ParseArguments(char **inputArgs)
 			this->_isFiles = true;
 			args.pop();
 		}
-		else if (args.front() == "--visualiser")
+		else if (args.front() == "--viewer")
 		{
 			args.pop();
-			this->_visualiseur = true;
+			this->_viewer = true;
 		}
 		else if (args.front() == "--algo")
 		{

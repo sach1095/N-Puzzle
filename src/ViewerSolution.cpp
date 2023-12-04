@@ -37,7 +37,7 @@ std::string moveToString(Move move) {
 }
 
 void reconstructAndDisplayPath(std::vector<int> puzzle, int puzzleSize, const std::vector<Move>& moves) {
-	std::ofstream htmlFile("solutionVisualiser.html");
+	std::ofstream htmlFile("solutionviewer.html");
 	if (!htmlFile.is_open())
 		throw CustomError("Error: Unable to open file for writing.");
 
