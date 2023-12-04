@@ -1,19 +1,19 @@
 
-#include "Puzzle.hpp"
+#include "PuzzleExtraInfo.hpp"
 #include "Custom_Error.hpp"
 
 // Initialize static var
-size_t Puzzle::SizeLine = 0;
+size_t PuzzleExtraInfo::SizeLine = 0;
 
-Puzzle::Puzzle(const Puzzle* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic) :
+PuzzleExtraInfo::PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic) :
 			   PreviousPuzzle(previousPuzzle), LastMove(lastMove),
 			   PathCost(pathCost), HeuristicValue(heuristic), TotalCost(pathCost + heuristic)
 {
-	if (!Puzzle::SizeLine)
+	if (!PuzzleExtraInfo::SizeLine)
 		throw CustomError("Set Puzzle::SizeLine before using Puzzle class");
 }
 
-void Puzzle::InitSizeLine(size_t size)
+void PuzzleExtraInfo::InitSizeLine(size_t size)
 {
 	static bool alreadyInitialize = false;
 
@@ -21,22 +21,22 @@ void Puzzle::InitSizeLine(size_t size)
 		throw CustomError("The size of the Puzzle has already been initialized");
 	else
 	{
-		Puzzle::SizeLine = size;
+		PuzzleExtraInfo::SizeLine = size;
 		alreadyInitialize = true;
 	}
 }
 
-size_t Puzzle::GetSizeLine()
+size_t PuzzleExtraInfo::GetSizeLine()
 {
-	if (Puzzle::SizeLine == 0)
+	if (PuzzleExtraInfo::SizeLine == 0)
 		throw CustomError("The size of the Puzzle has not been initialized");
 
-	return Puzzle::SizeLine;
+	return PuzzleExtraInfo::SizeLine;
 }
 
-const std::vector<int>& Puzzle::GetSolution()
+const std::vector<int>& PuzzleExtraInfo::GetSolution()
 {
-	size_t sizeLine = Puzzle::GetSizeLine();
+	size_t sizeLine = PuzzleExtraInfo::GetSizeLine();
 	static std::vector<int> solution(sizeLine * sizeLine, 0);
 	static bool firstTime = true;
 
@@ -82,14 +82,14 @@ const std::vector<int>& Puzzle::GetSolution()
 /**
  * Return a vector with the value of the puzzle piece as input and the position as output
 */
-const std::vector<size_t>& Puzzle::GetVecSolution()
+const std::vector<size_t>& PuzzleExtraInfo::GetVecSolution()
 {
 	static std::vector<size_t> vecSolution;
 
 	if (vecSolution.empty())
 	{
-		vecSolution = std::vector<size_t>(Puzzle::GetSizeLine() * Puzzle::GetSizeLine());
-		auto& solution = Puzzle::GetSolution();
+		vecSolution = std::vector<size_t>(PuzzleExtraInfo::GetSizeLine() * PuzzleExtraInfo::GetSizeLine());
+		auto& solution = PuzzleExtraInfo::GetSolution();
 		for (size_t i = 0; i < solution.size(); ++i)
 			vecSolution[solution[i]] = i;
 	}
@@ -97,9 +97,9 @@ const std::vector<size_t>& Puzzle::GetVecSolution()
 }
 
 
-std::ostream& operator<<(std::ostream& os, const Puzzle& puzzle)
+std::ostream& operator<<(std::ostream& os, const PuzzleExtraInfo& puzzle)
 {
-    os	<< "Puzzle(" << Puzzle::SizeLine << "): g = " << puzzle.PathCost
+    os	<< "Puzzle(" << PuzzleExtraInfo::SizeLine << "): g = " << puzzle.PathCost
 		<< " h = " << puzzle.HeuristicValue
 		<< " total = " << puzzle.TotalCost << std::endl;
 

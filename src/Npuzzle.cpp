@@ -13,7 +13,7 @@ int main(int ac, char **av)
 		Parse parser(ac, av);
 
 		// Init Puzzle size
-		Puzzle::InitSizeLine(parser.getSizeline());
+		PuzzleExtraInfo::InitSizeLine(parser.getSizeline());
 		heuristic heuristicToUse = parser.getHeuristicFunction();
 
 		auto algo = SearchAlgo(parser.getAlgoSelected(), heuristicToUse, parser.getParsedContent());

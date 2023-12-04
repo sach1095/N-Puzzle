@@ -3,28 +3,28 @@
 
 SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
                        std::vector<int> puzzleNumbers)
-                     : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(Puzzle::GetSolution())
+                     : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(PuzzleExtraInfo::GetSolution())
 {
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
 	// Create the init puzzle
-    this->InitPuzzle = Puzzle(nullptr, NONE, 0, this->HeuristicFunction(puzzleNumbers,Puzzle::GetSizeLine(), Puzzle::GetVecSolution()));
+    this->InitPuzzle = PuzzleExtraInfo(nullptr, NONE, 0, this->HeuristicFunction(puzzleNumbers,PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetVecSolution()));
 	this->InitVecNumbers = {puzzleNumbers, this->Hasher.Hash(puzzleNumbers), positionZero};
 
 	// Reserve memory
 	std::vector<setIterator> openedSetMemory;
-	if (Puzzle::GetSizeLine() == 3)
+	if (PuzzleExtraInfo::GetSizeLine() == 3)
 	{
 		openedSetMemory.reserve(1e4);
 		this->ClosedSet.reserve(1e4);
 	}
-	else if (Puzzle::GetSizeLine() == 4)
+	else if (PuzzleExtraInfo::GetSizeLine() == 4)
 	{
 		openedSetMemory.reserve(2e6);
 		this->ClosedSet.reserve(2e6);
 	}
-	else if (Puzzle::GetSizeLine() == 5)
+	else if (PuzzleExtraInfo::GetSizeLine() == 5)
 	{
 		openedSetMemory.reserve(2e7);
 		this->ClosedSet.reserve(2e7);
@@ -50,28 +50,28 @@ std::array<VecWithHash, 4> SearchAlgo::FindNeighbors(const VecWithHash& currentP
 	size_t zeroPos = currentPuzzle.ZeroPos;
 
 	// Left
-	if (zeroPos % Puzzle::GetSizeLine() != 0)
+	if (zeroPos % PuzzleExtraInfo::GetSizeLine() != 0)
 		neighbors[0] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos - 1, currentPuzzle.Hash);
 
 	// Right
-	if (zeroPos % Puzzle::GetSizeLine() != Puzzle::GetSizeLine() - 1)
+	if (zeroPos % PuzzleExtraInfo::GetSizeLine() != PuzzleExtraInfo::GetSizeLine() - 1)
 		neighbors[1] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos + 1, currentPuzzle.Hash);
 
 	// Up
-	if (zeroPos / Puzzle::GetSizeLine() != 0)
-		neighbors[2] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos - Puzzle::GetSizeLine(), currentPuzzle.Hash);
+	if (zeroPos / PuzzleExtraInfo::GetSizeLine() != 0)
+		neighbors[2] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos - PuzzleExtraInfo::GetSizeLine(), currentPuzzle.Hash);
 
 	// Down
-	if (zeroPos / Puzzle::GetSizeLine() != Puzzle::GetSizeLine() - 1)
-		neighbors[3] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos + Puzzle::GetSizeLine(), currentPuzzle.Hash);
+	if (zeroPos / PuzzleExtraInfo::GetSizeLine() != PuzzleExtraInfo::GetSizeLine() - 1)
+		neighbors[3] = SwapPuzzle(currentPuzzle.VecNumbers, zeroPos, zeroPos + PuzzleExtraInfo::GetSizeLine(), currentPuzzle.Hash);
 
 	return neighbors;
 }
 
-void SearchAlgo::PrintSolution(const Puzzle &solution, size_t nbrLoop, size_t maxSizeClosedSet)
+void SearchAlgo::PrintSolution(const PuzzleExtraInfo &solution, size_t nbrLoop, size_t maxSizeClosedSet)
 {
 	// Find the list of positions to go to the solution
-	const Puzzle *lastValue = &solution;
+	const PuzzleExtraInfo *lastValue = &solution;
 	std::vector<Move> reverseMoveSolution;
 	while (lastValue->GetPreviousPuzzle())
 	{
@@ -214,9 +214,9 @@ bool SearchAlgo::Solve()
 			{
 				size_t neighborHeuristic = (this->AlgorithmUsed == UNIFORM_COST) ?
 											0 :
-											this->HeuristicFunction(neighbor.VecNumbers, Puzzle::GetSizeLine(), Puzzle::GetVecSolution());
+											this->HeuristicFunction(neighbor.VecNumbers, PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetVecSolution());
 				// Insert element
-				auto [it, success] = this->ClosedSet.insert({neighbor, Puzzle(&valuePuzzle, lastMove[i], pathCostUpdated, neighborHeuristic)});
+				auto [it, success] = this->ClosedSet.insert({neighbor, PuzzleExtraInfo(&valuePuzzle, lastMove[i], pathCostUpdated, neighborHeuristic)});
 				this->OpenedSet.emplace(it);
 				sizeClosedSet++;
 			}

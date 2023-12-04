@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include "../include/Puzzle.hpp"
-#include "../include/Custom_Error.hpp"
+#include "PuzzleExtraInfo.hpp"
+#include "Custom_Error.hpp"
 
 void applyMove(std::vector<int>& puzzle, int puzzleSize, Move move) {
 	int emptyIndex = std::find(puzzle.begin(), puzzle.end(), 0) - puzzle.begin();
