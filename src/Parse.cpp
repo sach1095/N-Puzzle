@@ -1,39 +1,91 @@
 #include "Parse.hpp"
 #include "Custom_Error.hpp"
+#include "GeneratorMap.cpp"
 #include <filesystem>
 
-Parse::Parse(char **av) {
-	this->_isSolvable = true;
-	ParseAV(av);
+void process_help()
+{
+	std::cout << "Usage :" << std::endl;
+	std::cout << "\n./N-Puzzle [--file] [path to file]" << std::endl;
+	std::cout << "or" << std::endl;
+
+	std::cout << "./N-Puzzle [--size] [(number) size of the map] [--solvable (optional)] ['true' (default) or 'false']" << std::endl;
+
+	std::cout << "\nAdditional optional flags:" << std::endl;
+	std::cout << "--algo [astar/uniform/greedy]" << std::endl;
+
+	std::cout << " - Astar: Uses a heuristic to find the shortest path to the solution." << std::endl;
+	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
+	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
+
+	std::cout << "--heuristic [manhattan/linear/tiles]" << std::endl;
+
+	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
+	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
+	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
+
+	std::cout << "--viewer (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
+	exit(0);
+}
+
+Parse::Parse(int ac, char **inputArgs)
+{
+	if (ac <= 1)
+		process_help();
+	ParseArguments(inputArgs);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
 }
 
-const std::vector<int>& Parse::getParsedContent() const {
+const std::vector<int> &Parse::getParsedContent() const
+{
 	return this->_parsedContent;
 }
 
-size_t	Parse::getSizeline(){
-	return this->_sizeLine;
+Algorithm Parse::getAlgoSelected()
+{
+	return this->_algo;
+};
+
+void Parse::setHeuristicFunction(heuristic func)
+{
+	this->_heuristics = func;
 }
 
-void Parse::readInputFile() {
-	const std::string& filePathStr = this->_fileName;
+heuristic Parse::getHeuristicFunction()
+{
+	return this->_heuristics;
+}
+
+size_t Parse::getSizeline()
+{
+	return this->_sizeLine;
+}
+bool Parse::getviewer(){
+	return this->_viewer;
+}
+
+void Parse::readInputFile()
+{
+	const std::string &filePathStr = this->_fileName;
 	std::filesystem::path filePath(filePathStr);
 
-	// Vérifier si le chemin existe et est un fichier
-	if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath)) {
+	// Check if the path exists and is a file
+	if (!std::filesystem::exists(filePath) || !std::filesystem::is_regular_file(filePath))
+	{
 		throw CustomError("Error: " + filePathStr + "doesn't correspond to any file");
 	}
 
 	std::string line;
 	std::ifstream file(filePathStr);
 
-	if (!file.is_open()) {
+	if (!file.is_open())
+	{
 		throw CustomError("Error: Can not open the file : " + filePathStr);
 	}
 
-	while (std::getline(file, line)) {
+	while (std::getline(file, line))
+	{
 		this->_content.push(std::move(line));
 	}
 
@@ -43,27 +95,33 @@ void Parse::readInputFile() {
 	file.close();
 }
 
-std::vector<std::string> split(const std::string &s, char delim) {
+std::vector<std::string> split(const std::string &s, char delim)
+{
 	std::vector<std::string> result;
 	std::stringstream ss(s);
 	std::string item;
 
-	while (getline(ss, item, delim)) {
+	while (getline(ss, item, delim))
+	{
 		result.push_back(item);
 	}
 
 	return result;
 }
 
-void Parse::parseContent() {
-	while (!this->_content.empty()) {
-		const auto& line = this->_content.front();
+void Parse::parseContent()
+{
+	while (!this->_content.empty())
+	{
+		const auto &line = this->_content.front();
 		std::vector<std::string> tokens = split(line, ' ');
 
-		for (const auto& token : tokens) {
+		for (const auto &token : tokens)
+		{
 			if (!token.empty() && token[0] == '#')
 				break;
-			else if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit)){
+			else if (!token.empty() && std::all_of(token.begin(), token.end(), ::isdigit))
+			{
 				this->_parsedContent.push_back(std::stoi(token));
 			}
 			else if (!token.empty())
@@ -78,106 +136,64 @@ void Parse::parseContent() {
 	this->_parsedContent.erase(this->_parsedContent.begin());
 }
 
-void Parse::verifyPuzzle() {
+void Parse::verifyPuzzle()
+{
 
-	if (this->_sizeLine < 3) {
+	if (this->_sizeLine < 3)
+	{
 		throw CustomError("Error: Bad size map, minimum size is 3.");
 	}
 
 	size_t totalElements = this->_parsedContent.size();
 
 	// Ensure the total number of elements is consistent with the expected size of each row.
-	if (totalElements != this->_sizeLine * this->_sizeLine) {
+	if (totalElements != this->_sizeLine * this->_sizeLine)
+	{
 		throw CustomError("Error: the puzzle does not match the expected size.");
 	}
 
 	std::set<size_t> seenNumbers;
-	for (size_t num : this->_parsedContent) {
-		if (num >= totalElements) {
+	for (size_t num : this->_parsedContent)
+	{
+		if (num >= totalElements)
+		{
 			throw CustomError("Error: number (" + std::to_string(num) + ") out of range found in the puzzle.");
 		}
 		seenNumbers.insert(num);
 	}
 
-	if (seenNumbers.size() != totalElements) {
+	if (seenNumbers.size() != totalElements)
+	{
 		throw CustomError("Error: missing or duplicate numbers in the puzzle.");
 	}
 }
 
-void Parse::showParsedContent() {
+void Parse::showParsedContent()
+{
 
-	for (size_t i = 0; i < this->_parsedContent.size(); ++i) {
+	for (size_t i = 0; i < this->_parsedContent.size(); ++i)
+	{
 		std::cout << this->_parsedContent[i] << ' ';
-		if ((i + 1) % this->_sizeLine == 0) {
+		if ((i + 1) % this->_sizeLine == 0)
+		{
 			std::cout << std::endl;
 		}
 	}
 	std::cout << std::endl;
 }
 
-std::vector<int> makeGoal(int s) {
-	int ts = s * s;
-	std::vector<int> puzzle(ts, -1);
-	int cur = 1, x = 0, ix = 1, y = 0, iy = 0;
-	while (true) {
-		puzzle[x + y * s] = cur;
-		cur++;
-		if (x + ix == s || x + ix < 0 || (ix != 0 && puzzle[x + ix + y * s] != -1)) {
-			iy = ix;
-			ix = 0;
-		} else if (y + iy == s || y + iy < 0 || (iy != 0 && puzzle[x + (y + iy) * s] != -1)) {
-			ix = -iy;
-			iy = 0;
-		}
-		x += ix;
-		y += iy;
-		if (cur == s * s)
-		{
-			cur = 0;
-			break;
-		}
+void Parse::ParseArguments(char **inputArgs)
+{
+	std::queue<std::string> args;
+	this->_isFiles = false;
+	int otherFlag = 0;
+
+	for (size_t i = 1; inputArgs[i]; i++)
+	{
+		if (strcmp(inputArgs[i], "--help") == 0)
+			process_help();
+		args.push(inputArgs[i]);
 	}
-	return puzzle;
-}
-
-void swapEmpty(std::vector<int>& p, int s) {
-	int idx = std::distance(p.begin(), std::find(p.begin(), p.end(), 0));
-	std::vector<int> poss;
-	if (idx % s > 0) poss.push_back(idx - 1);
-	if (idx % s < s - 1) poss.push_back(idx + 1);
-	if (idx / s > 0) poss.push_back(idx - s);
-	if (idx / s < s - 1) poss.push_back(idx + s);
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-	int swi = poss[std::uniform_int_distribution<>(0, poss.size() - 1)(g)];
-
-	std::swap(p[idx], p[swi]);
-}
-
-std::vector<int> makePuzzle(int size, bool isSolvable) {
-	std::vector<int> p = makeGoal(size);
-	for (int i = 0; i < 4096; ++i) {
-		swapEmpty(p, size);
-	}
-
-	if (!isSolvable) {
-		if (p[0] == 0 || p[1] == 0) {
-			std::swap(p[p.size() - 1], p[p.size() - 2]);
-		} else {
-			std::swap(p[0], p[1]);
-		}
-	}
-
-	return p;
-}
-
-void Parse::ParseAV(char **av){
-
-	std::queue<std::string>	args;
-	int	otherFlag = 0;
-	for (size_t i = 1; av[i]; i++)
-		args.push(av[i]);
 	while (!args.empty())
 	{
 		if (args.front() == "--size")
@@ -188,17 +204,19 @@ void Parse::ParseAV(char **av){
 				throw CustomError("Error: No given argument for --size");
 			try
 			{
-				int temp = std::stoi(args.front());
-				if (temp <= 2)
+				int resultCast = std::stoi(args.front());
+				if (resultCast <= 2)
 					throw CustomError("");
-				this->_sizeLine = static_cast<size_t>(temp);
+				this->_sizeLine = static_cast<size_t>(resultCast);
 				args.pop();
 			}
-			catch(const std::exception& e){
+			catch (const std::exception &e)
+			{
 				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value needs to be a number and bigger than 2.");
 			}
 		}
-		else if (args.front() == "--solvable"){
+		else if (args.front() == "--solvable")
+		{
 			args.pop();
 			otherFlag++;
 			if (args.empty())
@@ -211,35 +229,66 @@ void Parse::ParseAV(char **av){
 				throw CustomError("Error: Bad argument for --solvable, is need to be true or false.");
 			args.pop();
 		}
-		else if (args.front() == "--file"){
+		else if (args.front() == "--file")
+		{
 			args.pop();
-			if (otherFlag != 0)
-				throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
 			if (args.empty())
 				throw CustomError("Error: No given argument for --file");
 			this->_fileName = args.front();
 			this->_isFiles = true;
 			args.pop();
 		}
-		else if (args.front() == "--help"){
+		else if (args.front() == "--viewer")
+		{
 			args.pop();
-			std::cout << "Usage :" << std::endl;
-			std::cout << "\n./N-Puzzle [--file] [path to file] \nor" << std::endl;
-			std::cout << "./N-Puzzle [--size] [(number)size of the map] [--solvable (optional)] [(boolean) 'true'(default) or 'false']" << std::endl;
-			exit(0);
+			this->_viewer = true;
+		}
+		else if (args.front() == "--algo")
+		{
+			args.pop();
+			if (args.empty())
+				throw CustomError("Error: No given argument for --algo");
+			if (args.front() == "astar")
+				this->_algo = ASTAR;
+			else if (args.front() == "uniform")
+				this->_algo = UNIFORM_COST;
+			else if (args.front() == "greedy")
+				this->_algo = GREEDY;
+			else
+				throw CustomError("Error: Unrecognized args for --algo, valide choose is [astar/uniform/greedy]");
+			args.pop();
+		}
+		else if (args.front() == "--heuristic")
+		{
+			args.pop();
+			if (args.empty())
+				throw CustomError("Error: No given argument for --heuristic");
+			if (args.front() == "manhattan")
+				this->setHeuristicFunction(manhattan_distance);
+			else if (args.front() == "linear")
+				this->setHeuristicFunction(linear_conflict);
+			else if (args.front() == "tiles")
+				this->setHeuristicFunction(tiles_out_of_place);
+			else
+				throw CustomError("Error: Unrecognized args for --heuristic, valide choose is [manhattan/linear/tiles]");
+			args.pop();
 		}
 		else
 			throw CustomError("Error: Unrecognized args : " + args.front());
 	}
 
-	if (!this->_isFiles){
+	if (this->_isFiles)
+	{
+		if (otherFlag != 0)
+			throw CustomError("Error: if --size or --solvable is set, using flag --file is not allowed.");
+		this->readInputFile();
+		this->parseContent();
+	}
+	else
+	{
 		if (this->_sizeLine < 2)
 			throw CustomError("Error: Bad argument for --size, the minimum for a map size is 3");
 		this->_parsedContent = makePuzzle(this->_sizeLine, this->_isSolvable);
-	}
-	else{
-		this->readInputFile();
-		this->parseContent();
 	}
 	this->verifyPuzzle();
 }

@@ -26,3 +26,45 @@ size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine
 
 	return distance;
 }
+
+// Linear conflicts occur when tiles are in their correct row or column but are reversed with another tile.
+// Each linear conflict adds 2 to the cost (since at least two extra moves are necessary to resolve the conflict).
+size_t linear_conflict(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::unordered_map<int, size_t>& mapSolution) {
+	size_t distance = manhattan_distance(puzzleNumbers, sizeLine, mapSolution);
+	size_t conflict = 0;
+
+	for (size_t i = 0; i < sizeLine; ++i) {
+		for (size_t j = 0; j < sizeLine; ++j) {
+			for (size_t k = j + 1; k < sizeLine; ++k) {
+				// Check for linear conflicts on the line
+				if (mapSolution.at(puzzleNumbers[i * sizeLine + j]) / sizeLine == i &&
+					mapSolution.at(puzzleNumbers[i * sizeLine + k]) / sizeLine == i &&
+					puzzleNumbers[i * sizeLine + j] > puzzleNumbers[i * sizeLine + k]) {
+					conflict++;
+				}
+				// Check for linear conflicts on the column
+				if (mapSolution.at(puzzleNumbers[j * sizeLine + i]) % sizeLine == i &&
+					mapSolution.at(puzzleNumbers[k * sizeLine + i]) % sizeLine == i &&
+					puzzleNumbers[j * sizeLine + i] > puzzleNumbers[k * sizeLine + i]) {
+					conflict++;
+				}
+			}
+		}
+	}
+
+	return distance + 2 * conflict;
+}
+
+// Count the number of tiles that are out of place.
+size_t tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::unordered_map<int, size_t>& mapSolution) {
+	(void)sizeLine;
+	size_t count = 0;
+
+	for (size_t i = 0; i < puzzleNumbers.size(); ++i) {
+		if (puzzleNumbers[i] != 0 && mapSolution.at(puzzleNumbers[i]) != i) {
+			count++;
+		}
+	}
+
+	return count;
+}

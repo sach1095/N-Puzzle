@@ -1,7 +1,7 @@
 # Compilation
 NAME		=	N-Puzzle
 CC			=	g++
-FLAGS		=	-std=c++17 -Ofast -Wall -Wextra -g3
+FLAGS		=	-std=c++17 -Ofast -Wall -Wextra -Werror -g3
 HEADER		=	-I$(PATH_INC)
 
 # Color Code and template code
@@ -58,12 +58,16 @@ clean	:
 
 fclean	:	clean
 	@ rm -rf $(NAME)
+	@ rm -rf solutionviewer.html
 	@ printf "$(CYAN)'$(NAME)'$(RESET) and all .o has been $(RED)deleted. 🗑️\n$(RESET)"
 
 re		:	fclean all
 
 run : all
 	@ ./$(NAME) --size 3
+
+visu : all
+	@ ./$(NAME) --size 3 --viewer
 
 file: all
 	@ ./$(NAME) --file maps/valids/3x3/3x3_comment_inline.txt
@@ -76,6 +80,7 @@ help	:
 	@ printf "Command of the Makefile : \n\n"
 	@ printf " - run :          run algo witch generated map 3x3 \n"
 	@ printf " - file :         run algo witch map 4x4 solvable.txt \n"
+	@ printf " - visu :         run algo witch generated map 3x3 and create file html\n"
 	@ printf " - clean :        clean objs \n"
 	@ printf " - fclean :       clean exec and objs\n"
 	@ printf " - re :           clean and recompile\n"
