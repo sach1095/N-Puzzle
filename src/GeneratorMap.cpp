@@ -56,11 +56,6 @@ std::vector<int> makeGoal(int puzzleSize)
 std::vector<int> makePuzzle(int puzzleSize, bool isSolvable) {
 	std::vector<int> puzzle = makeGoal(puzzleSize); // Start with a solved puzzle.
 
-	// Shuffle the puzzle by swapping the empty tile with adjacent tiles.
-	for (int i = 0; i < 4096; ++i) {
-		swapEmptyTile(puzzle, puzzleSize);
-	}
-
 	// If the puzzle should be unsolvable, swap the first two tiles (if possible) to make it unsolvable.
 	if (!isSolvable) {
 		if (puzzle[0] == 0 || puzzle[1] == 0) {
@@ -68,6 +63,11 @@ std::vector<int> makePuzzle(int puzzleSize, bool isSolvable) {
 		} else {
 			std::swap(puzzle[0], puzzle[1]);
 		}
+	}
+
+	// Shuffle the puzzle by swapping the empty tile with adjacent tiles.
+	for (int i = 0; i < 4096; ++i) {
+		swapEmptyTile(puzzle, puzzleSize);
 	}
 
 	return puzzle;

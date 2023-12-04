@@ -46,14 +46,17 @@ void reconstructAndDisplayPath(std::vector<int> puzzle, int puzzleSize, const st
 	htmlFile << "table { border-collapse: collapse; margin-bottom: 20px; }\n";
 	htmlFile << "td { width: 40px; height: 40px; text-align: center; border: 1px solid black; }\n";
 	htmlFile << "</style>\n";
-	htmlFile << "</head>\n<body>\n";
+	htmlFile << "</head>\n<body style='background-color: bisque; display: flex; flex-direction: column; align-items: center; font-size: 3rem;'>\n";
 
-	htmlFile << "<div>Initial State</div>\n";
-	htmlFile << "<table>\n";
+	htmlFile << "<div style='margin: 1rem; font-family: cursive;'>Initial State</div>\n";
+	htmlFile << "<table style='position: relative; width: 612px; height: 612px; margin: 0 auto 25px auto; border: 2px solid #333; background-color: #FFF; box-shadow: 0 0 15px #333;  -moz-box-shadow: 0 0 15px #333;  -webkit-box-shadow: 0 0 15px #333; border: #8b4000; border-style: ridge; border-width: 1.5rem; background-color: peru;'>\n";
 	for (int i = 0; i < puzzleSize; ++i) {
 		htmlFile << "<tr>\n";
 		for (int j = 0; j < puzzleSize; ++j) {
-			htmlFile << "<td>" << puzzle[i * puzzleSize + j] << "</td>\n";
+			if (puzzle[i * puzzleSize + j] == 0)
+				htmlFile << "<td style='background-color: aliceblue; color: transparent; width: 200px !important; height: 200px !important; text-align: center; border: 0.3rem solid black !important;'>" << puzzle[i * puzzleSize + j] << "</td>\n";
+			else
+				htmlFile << "<td style='background-color: floralwhite; width: 200px !important; height: 200px !important; text-align: center; border: 0.3rem solid black !important;'>" << puzzle[i * puzzleSize + j] << "</td>\n";
 		}
 		htmlFile << "</tr>\n";
 	}
@@ -62,12 +65,15 @@ void reconstructAndDisplayPath(std::vector<int> puzzle, int puzzleSize, const st
 	for (auto it = moves.rbegin(); it != moves.rend(); ++it) {
 		Move move = *it;
 		applyMove(puzzle, puzzleSize, move);
-		htmlFile << "<div>Move: " << moveToString(move) << "</div>\n";
-		htmlFile << "<table>\n";
+		htmlFile << "<div style='margin: 1rem; font-family: cursive;'>Move: " << moveToString(move) << "</div>\n";
+		htmlFile << "<table style='position: relative; width: 612px; height: 612px; margin: 0 auto 25px auto; border: 2px solid #333; background-color: #FFF; box-shadow: 0 0 15px #333;  -moz-box-shadow: 0 0 15px #333;  -webkit-box-shadow: 0 0 15px #333; border: #8b4000; border-style: ridge; border-width: 1.5rem; background-color: peru;'>\n";
 		for (int i = 0; i < puzzleSize; ++i) {
 			htmlFile << "<tr>\n";
 			for (int j = 0; j < puzzleSize; ++j) {
-				htmlFile << "<td>" << puzzle[i * puzzleSize + j] << "</td>\n";
+				if (puzzle[i * puzzleSize + j] == 0)
+				htmlFile << "<td style='background-color: aliceblue; color: transparent; width: 200px !important; height: 200px !important; text-align: center; border: 0.3rem solid black !important;'>" << puzzle[i * puzzleSize + j] << "</td>\n";
+			else
+				htmlFile << "<td style='background-color: floralwhite; width: 200px !important; height: 200px !important; text-align: center; border: 0.3rem solid black !important;'>" << puzzle[i * puzzleSize + j] << "</td>\n";
 			}
 			htmlFile << "</tr>\n";
 		}
