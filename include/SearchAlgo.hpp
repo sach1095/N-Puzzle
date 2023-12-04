@@ -2,6 +2,7 @@
 #define SEARCHALGO_HPP
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <memory>
 #include <queue>
@@ -17,16 +18,31 @@
 
 using namespace std::chrono;
 
-// Hash function for Puzzle
+struct VecWithHash
+{
+	std::vector<int> VecNumbers;
+	int Hash;
+	size_t ZeroPos;
+
+	VecWithHash() = default;
+	VecWithHash(const std::vector<int>& vecNumbers, int hash, size_t zeroPos)
+		: VecNumbers(vecNumbers), Hash(hash), ZeroPos(zeroPos) {}
+};
+
+inline bool operator==(const VecWithHash& lhs, const VecWithHash& rhs)
+{
+	return lhs.VecNumbers == rhs.VecNumbers;
+}
+
 struct HashPuzzle
 {
-	std::size_t operator()(const Puzzle& puzzle) const noexcept
+	std::size_t operator()(const VecWithHash& puzzle) const noexcept
 	{
-		return puzzle.GetHashValue();
+		return puzzle.Hash;
 	}
 };
 
-using setType = std::unordered_set<Puzzle, HashPuzzle>;
+using setType = std::unordered_map<VecWithHash, Puzzle, HashPuzzle>;
 using setIterator = setType::iterator;
 
 // Comparaison structure for puzzle
@@ -34,7 +50,7 @@ struct ComparePuzzleCost
  {
    bool operator()(setIterator& l, setIterator& r)
    {
-       return l->GetTotalCost() > r->GetTotalCost();
+       return l->second.GetTotalCost() > r->second.GetTotalCost();
    }
  };
 
@@ -46,28 +62,26 @@ public:
 			   std::vector<int> puzzleNumbers);
 
     bool Solve();
-    std::vector<Puzzle> FindNeighbors(const Puzzle& currentPuzzle, size_t newPathCost) const;
-	void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
+	const std::vector<Move>& getReverseMoveSolution(){return this->reverseMoveSolution;};
 	void setReverseMoveSolution(std::vector<Move> reverseMoveSolution) {this->reverseMoveSolution = reverseMoveSolution;};
-	std::vector<Move> getReverseMoveSolution(){return reverseMoveSolution;};
-	Puzzle SwapPuzzle(const Puzzle& puzzle, size_t newZeroPos, size_t newPathCost, Move move) const;
+	VecWithHash SwapPuzzle(const std::vector<int>& vecPuzzle, size_t zeroPos, size_t newZeroPos, size_t hash) const;
+	std::array<VecWithHash, 4> FindNeighbors(const VecWithHash& currentPuzzle) const;
+	void PrintSolution(const Puzzle& solution, size_t nbrLoop, size_t maxSizeClosedSet);
 
 private:
 
 	// Parameters
-	Algorithm                   AlgorithmUsed;
-	heuristic                   HeuristicFunction;
-	std::vector<Move>           reverseMoveSolution;
-	ZobristHash					Hasher = ZobristHash(Puzzle::GetSizeLine() * Puzzle::GetSizeLine());
+	Algorithm	AlgorithmUsed;
+	heuristic	HeuristicFunction;
+	std::vector<Move> reverseMoveSolution;
+	ZobristHash	Hasher = ZobristHash(Puzzle::GetSizeLine() * Puzzle::GetSizeLine());
 
     // Intern members
-    Puzzle					     InitPuzzlePtr;
+    Puzzle		InitPuzzle;
+	VecWithHash	InitVecNumbers;
     std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost> OpenedSet;
-    // Use the hash function of Puzzle
-    setType						ClosedSet;
-    size_t 						MaxSizeClosedSet = 0;
-    size_t 						MaxSizeOpenedSet = 0;
-	const Puzzle				&Solution;
+    setType		 ClosedSet;
+	const std::vector<int> &Solution;
 };
 
 #endif
