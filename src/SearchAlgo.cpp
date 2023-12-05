@@ -9,7 +9,7 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
 	// Create the init puzzle
-    this->InitPuzzle = PuzzleExtraInfo(nullptr, NONE, 0, this->HeuristicFunction(puzzleNumbers,PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetVecSolution()));
+    this->InitPuzzle = PuzzleExtraInfo(nullptr, NONE, 0, this->HeuristicFunction(puzzleNumbers,PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetSolution(), PuzzleExtraInfo::GetVecSolution()));
 	this->InitVecNumbers = {puzzleNumbers, this->Hasher.Hash(puzzleNumbers), positionZero};
 
 	// Reserve memory
@@ -214,7 +214,7 @@ bool SearchAlgo::Solve()
 			{
 				size_t neighborHeuristic = (this->AlgorithmUsed == UNIFORM_COST) ?
 											0 :
-											this->HeuristicFunction(neighbor.VecNumbers, PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetVecSolution());
+											this->HeuristicFunction(neighbor.VecNumbers, PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetSolution(), PuzzleExtraInfo::GetVecSolution());
 				// Insert element
 				auto [it, success] = this->ClosedSet.insert({neighbor, PuzzleExtraInfo(&valuePuzzle, lastMove[i], pathCostUpdated, neighborHeuristic)});
 				this->OpenedSet.emplace(it);

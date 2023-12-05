@@ -9,10 +9,11 @@ std::tuple<size_t, size_t> get_2dPosition(size_t position, size_t sizeLine)
 }
 
 // https://en.wikipedia.org/wiki/Taxicab_geometry
-size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<size_t>& vecSolution)
+size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
 {
 	size_t distance  = 0;
 	int x_pos,y_pos, x_sol, y_sol;
+	(void)vecSolution;
 
 	for (size_t i = 0; i < puzzleNumbers.size(); ++i)
 	{
@@ -20,8 +21,8 @@ size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine
 		x_pos = i / sizeLine;
 		y_pos = i % sizeLine;
 		// Get the solution position for the number
-		x_sol = vecSolution.at(puzzleNumbers[i]) / sizeLine;
-		y_sol = vecSolution.at(puzzleNumbers[i]) % sizeLine;
+		x_sol = mapSolution.at(puzzleNumbers[i]) / sizeLine;
+		y_sol = mapSolution.at(puzzleNumbers[i]) % sizeLine;
 
 		distance += std::abs(x_sol - x_pos) + std::abs(y_sol - y_pos);
 	}
@@ -31,8 +32,8 @@ size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine
 
 // Linear conflicts occur when tiles are in their correct row or column but are reversed with another tile.
 // Each linear conflict adds 2 to the cost (since at least two extra moves are necessary to resolve the conflict).
-size_t linear_conflict(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<size_t>& mapSolution) {
-	size_t distance = manhattan_distance(puzzleNumbers, sizeLine, mapSolution);
+size_t linear_conflict(   const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution){
+	size_t distance = manhattan_distance(puzzleNumbers, sizeLine, vecSolution, mapSolution);
 	size_t conflict = 0;
 
 	for (size_t i = 0; i < sizeLine; ++i) {
@@ -58,8 +59,9 @@ size_t linear_conflict(const std::vector<int>& puzzleNumbers, size_t sizeLine, c
 }
 
 // Count the number of tiles that are out of place.
-size_t tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<size_t>& mapSolution) {
+size_t tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution){
 	(void)sizeLine;
+	(void)vecSolution;
 	size_t count = 0;
 
 	for (size_t i = 0; i < puzzleNumbers.size(); ++i) {
