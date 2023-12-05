@@ -17,19 +17,19 @@ SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
 	if (PuzzleExtraInfo::GetSizeLine() == 3)
 	{
 		openedSetMemory.reserve(1e4);
-		this->ClosedSet.reserve(1e4);
+		this->ClosedSet.reserve(2e4);
 	}
 	else if (PuzzleExtraInfo::GetSizeLine() == 4)
 	{
-		openedSetMemory.reserve(2e6);
+		openedSetMemory.reserve(1e6);
 		this->ClosedSet.reserve(2e6);
 	}
 	else if (PuzzleExtraInfo::GetSizeLine() == 5)
 	{
-		openedSetMemory.reserve(2e7);
+		openedSetMemory.reserve(1e7);
 		this->ClosedSet.reserve(2e7);
 	}
-	this->OpenedSet = std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost>(ComparePuzzleCost(), std::move(openedSetMemory));
+	this->OpenedSet = std::priority_queue<setIterator, std::vector<setIterator>>(std::less<setIterator>(), std::move(openedSetMemory));
 }
 
 VecWithHash SearchAlgo::SwapPuzzle(const std::vector<int>& vecPuzzle, size_t zeroPos, size_t newZeroPos, size_t hash) const

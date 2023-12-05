@@ -34,25 +34,48 @@ inline bool operator==(const VecWithHash& lhs, const VecWithHash& rhs)
 	return lhs.VecNumbers == rhs.VecNumbers;
 }
 
-struct HashPuzzle
+namespace std
 {
-	std::size_t operator()(const VecWithHash& puzzle) const noexcept
+    template <>
+    struct hash<VecWithHash>
 	{
-		return puzzle.Hash;
-	}
-};
+		std::size_t operator()(const VecWithHash& puzzle) const noexcept
+		{
+			return puzzle.Hash;
+		}
+	};
+}
 
-using setType = std::unordered_map<VecWithHash, PuzzleExtraInfo, HashPuzzle>;
+using setType = std::unordered_map<VecWithHash, PuzzleExtraInfo>;
 using setIterator = setType::iterator;
 
-// Comparaison structure for puzzle
-struct ComparePuzzleCost
- {
-   bool operator()(setIterator& l, setIterator& r)
-   {
-       return l->second.GetTotalCost() > r->second.GetTotalCost();
-   }
- };
+
+namespace std
+{
+    template <>
+    struct hash<setIterator>
+	{
+        size_t operator()(const setIterator& key) const {
+            return key->first.Hash;
+        }
+	};
+	template <>
+    struct greater<setIterator>
+	{
+        bool operator()(const setIterator& lhs, const setIterator& rhs) const
+		{
+			return lhs->second.GetTotalCost() < rhs->second.GetTotalCost();
+        }
+    };
+	template <>
+    struct less<setIterator>
+	{
+        bool operator()(const setIterator& lhs, const setIterator& rhs) const
+		{
+			return lhs->second.GetTotalCost() > rhs->second.GetTotalCost();
+        }
+    };
+}
 
 class SearchAlgo
 {
@@ -79,7 +102,7 @@ private:
     // Intern members
     PuzzleExtraInfo		InitPuzzle;
 	VecWithHash	InitVecNumbers;
-    std::priority_queue<setIterator, std::vector<setIterator>, ComparePuzzleCost> OpenedSet;
+    std::priority_queue<setIterator, std::vector<setIterator>> OpenedSet;
     setType		 ClosedSet;
 	const std::vector<int> &Solution;
 };
