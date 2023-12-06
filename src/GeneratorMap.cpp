@@ -26,7 +26,8 @@ void swapEmptyTile(std::vector<int> &puzzle, int puzzleSize) {
 }
 
 // Generates a goal state for the puzzle in a spiral pattern.
-std::vector<int> makeGoal(int puzzleSize) {
+std::vector<int> makeGoal(int puzzleSize)
+{
 	int totalTiles = puzzleSize * puzzleSize;
 	std::vector<int> puzzle(totalTiles, 0);
 	int currentValue = 1, xCoord = 0, xStep = 1, yCoord = 0, yStep = 0;
