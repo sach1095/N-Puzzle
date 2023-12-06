@@ -40,7 +40,6 @@ public:
 	void setHeuristicFunction(heuristic func);
 	heuristic getHeuristicFunction();
 	bool getviewer();
-	bool isSolvable();
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "Parse.hpp"
 #include "SearchAlgo.hpp"
 #include "ViewerSolution.hpp"
+#include "isNotSolvable.hpp"
 
 int main(int ac, char **av)
 {
@@ -12,6 +13,10 @@ int main(int ac, char **av)
 		// Init Puzzle size
 		PuzzleExtraInfo::InitSizeLine(parser.getSizeline());
 		heuristic heuristicToUse = parser.getHeuristicFunction();
+
+		// Verification of the solvability of the map
+		if (isNotSolvable(parser.getParsedContent(), parser.getSizeline()))
+			throw CustomError("Error: this map is not solvable.");
 
 		auto algo = SearchAlgo(parser.getAlgoSelected(), heuristicToUse, parser.getParsedContent());
 		if (algo.Solve() && parser.getviewer())

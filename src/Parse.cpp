@@ -1,6 +1,8 @@
 #include "Parse.hpp"
 #include "Custom_Error.hpp"
 #include "GeneratorMap.hpp"
+#include "Enum.hpp"
+#include "Heuristics.hpp"
 #include <filesystem>
 
 void process_help()
@@ -35,11 +37,6 @@ Parse::Parse(int ac, char **inputArgs)
 	ParseArguments(inputArgs);
 	std::cout << "Valid content afther parsing :" << std::endl;
 	this->showParsedContent();
-
-	if (this->_sizeLine <= 5){
-		if (this->isSolvable())
-			throw CustomError("Error: this map is unsolvable.");
-	}
 }
 
 const std::vector<int> &Parse::getParsedContent() const
@@ -68,28 +65,6 @@ size_t Parse::getSizeline()
 }
 bool Parse::getviewer(){
 	return this->_viewer;
-}
-
-bool Parse::isSolvable() {
-	int totalInversionCount = 0;
-	int sizeTotal = this->_sizeLine * this->_sizeLine;
-	int ligneZero = 0;
-
-	for (int i = 0; i < sizeTotal; i++) {
-		for (int y = i + 1; y < sizeTotal; y++) {
-			if (this->_parsedContent[i] > this->_parsedContent[y] && this->_parsedContent[y] != 0) {
-				totalInversionCount++;
-			}
-		}
-
-		if (this->_parsedContent[i] == 0) {
-			ligneZero = this->_sizeLine - (i / this->_sizeLine);
-		}
-	}
-
-	if (this->_sizeLine % 2 != 0)
-		return totalInversionCount % 2 == 0;
-	return (totalInversionCount + ligneZero) % 2 == 0;
 }
 
 void Parse::readInputFile()
