@@ -11,7 +11,7 @@ std::tuple<size_t, size_t> get_2dPosition(size_t position, size_t sizeLine)
 // https://en.wikipedia.org/wiki/Taxicab_geometry
 size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
 {
-	size_t distance  = 0;
+	double distance  = 0;
 	int x_pos,y_pos, x_sol, y_sol;
 	(void)vecSolution;
 
@@ -62,7 +62,7 @@ size_t linear_conflict(   const std::vector<int>& puzzleNumbers, size_t sizeLine
 size_t tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution){
 	(void)sizeLine;
 	(void)vecSolution;
-	size_t count = 0;
+	double count = 0;
 
 	for (size_t i = 0; i < puzzleNumbers.size(); ++i) {
 		if (puzzleNumbers[i] != 0 && mapSolution.at(puzzleNumbers[i]) != i) {

@@ -28,8 +28,8 @@ public:
     GET_MACRO(PreviousPuzzle, const PuzzleExtraInfo*);
 	GET_MACRO(LastMove, Move);
     GET_MACRO(PathCost, size_t);
-    GET_MACRO(HeuristicValue, size_t);
-    GET_MACRO(TotalCost, size_t);
+    GET_MACRO(HeuristicValue, double);
+    GET_MACRO(TotalCost, double);
 
     static void InitSizeLine(size_t size);
     SET_MACRO(PreviousPuzzle, const PuzzleExtraInfo*);
@@ -44,8 +44,8 @@ private :
     Move					LastMove;
     // Costs
     size_t 					PathCost;
-    size_t 					HeuristicValue;
-    size_t 					TotalCost;
+    double 					HeuristicValue;
+    double 					TotalCost;
 };
 
 #endif
