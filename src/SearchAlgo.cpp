@@ -167,6 +167,14 @@ bool SearchAlgo::Solve()
 			return true;
 		}
 
+		// Stop the program if too much space is used
+		if (this->OpenedSet.size() > 9e6 ||sizeClosedSet > 1.8e7)
+		{
+			handleWaitingMessage(false);
+			std::cout << BOLDRED << "The program has exceeded memory limits. Exit" << std::endl;
+			break;
+		}
+
 		// Output message than the program is computing
 		handleWaitingMessage(true, nbrLoop, top.GetHeuristicValue(), this->OpenedSet.size(), sizeClosedSet);
 
