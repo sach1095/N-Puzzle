@@ -16,7 +16,6 @@ class PuzzleExtraInfo
 {
 public:
     PuzzleExtraInfo() = default;
-    PuzzleExtraInfo(const PuzzleExtraInfo& rhs) = default;
     PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic);
 
     friend std::ostream& operator<<(std::ostream& os, const PuzzleExtraInfo& puzzle);

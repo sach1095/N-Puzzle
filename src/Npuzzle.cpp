@@ -1,10 +1,7 @@
 #include "Custom_Error.hpp"
 #include "Parse.hpp"
 #include "SearchAlgo.hpp"
-#include "ViewerSolution.cpp"
-
-// TODO Handle different heuristic function + different algorithm used
-//! For now only using Manathan-distance as heuristic with A* algo
+#include "ViewerSolution.hpp"
 
 int main(int ac, char **av)
 {
