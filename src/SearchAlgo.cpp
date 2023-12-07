@@ -86,7 +86,7 @@ void SearchAlgo::PrintSolution(const PuzzleExtraInfo &solution, size_t nbrLoop, 
 	std::cout << "Max number of states in memory   : "   << BOLDRED << maxSizeClosedSet			<< RESET << std::endl;
 	std::cout << "Numbers of moves to the solution : " << BOLDRED << reverseMoveSolution.size() << RESET << std::endl;
 	std::cout << "List of moves : " << RESET << std::endl;
-	std::cout << "[";
+	std::cout << "[ ";
 	for (auto it = reverseMoveSolution.rbegin(); it != reverseMoveSolution.rend(); ++it)
 	{
 		if (*it == LEFT)
@@ -99,8 +99,8 @@ void SearchAlgo::PrintSolution(const PuzzleExtraInfo &solution, size_t nbrLoop, 
 			std::cout << BOLDBLACK << "Down  " << RESET;
 
 		auto i = std::distance(reverseMoveSolution.rbegin(), it);
-		if ((i + 1) % 10 == 0)
-			std::cout << "\n ";
+		if ((i + 1) % 10 == 0 && it != std::prev(reverseMoveSolution.rend()))
+			std::cout << "\n  ";
 	}
 	std::cout << "]" << std::endl;
 }
