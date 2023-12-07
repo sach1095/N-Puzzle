@@ -35,7 +35,7 @@ Parse::Parse(int ac, char **inputArgs)
 	if (ac <= 1)
 		process_help();
 	ParseArguments(inputArgs);
-	std::cout << "Valid content afther parsing :" << std::endl;
+	std::cout << "Map to solve :" << std::endl;
 	this->showParsedContent();
 }
 
@@ -172,10 +172,14 @@ void Parse::verifyPuzzle()
 
 void Parse::showParsedContent()
 {
-
+	int sizeSetw = 1;
+	if (this->_parsedContent.size() >= 10)
+		sizeSetw = 2;
+	if (this->_parsedContent.size() >= 100)
+		sizeSetw = 3;
 	for (size_t i = 0; i < this->_parsedContent.size(); ++i)
 	{
-		std::cout << this->_parsedContent[i] << ' ';
+		std::cout << std::setw(sizeSetw) << this->_parsedContent[i] << ' ';
 		if ((i + 1) % this->_sizeLine == 0)
 		{
 			std::cout << std::endl;
