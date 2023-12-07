@@ -1,6 +1,6 @@
 #include "Parse.hpp"
 #include "Custom_Error.hpp"
-#include "GeneratorMap.cpp"
+#include "GeneratorMap.hpp"
 #include <filesystem>
 
 void process_help()
@@ -18,10 +18,10 @@ void process_help()
 	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
 	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
 
-	std::cout << "--heuristic [manhattan/linear/tiles]" << std::endl;
+	std::cout << "--heuristic [manhattan/euclidean/tiles]" << std::endl;
 
 	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
-	std::cout << " - Linear: Adds a penalty for linear conflicts to the Manhattan distance." << std::endl;
+	std::cout << " - Euclidean: Calculates the cost based on the Euclidean distance of each tile to its target position." << std::endl;
 	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
 
 	std::cout << "--viewer (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
@@ -265,12 +265,12 @@ void Parse::ParseArguments(char **inputArgs)
 				throw CustomError("Error: No given argument for --heuristic");
 			if (args.front() == "manhattan")
 				this->setHeuristicFunction(manhattan_distance);
-			else if (args.front() == "linear")
-				this->setHeuristicFunction(linear_conflict);
 			else if (args.front() == "tiles")
 				this->setHeuristicFunction(tiles_out_of_place);
+			else if (args.front() == "euclidean")
+				this->setHeuristicFunction(euclidean_heuristic);
 			else
-				throw CustomError("Error: Unrecognized args for --heuristic, valide choose is [manhattan/linear/tiles]");
+				throw CustomError("Error: Unrecognized args for --heuristic, valide choose is [manhattan/euclidean/tiles]");
 			args.pop();
 		}
 		else

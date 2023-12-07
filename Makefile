@@ -28,11 +28,13 @@ PATH_OBJ	=	obj
 
 # Source
 SRC		=	$(addprefix $(PATH_SRC)/, \
-			SearchAlgo.cpp	\
+			GeneratorMap.cpp \
 			Heuristics.cpp	\
 			Npuzzle.cpp		\
 			Parse.cpp		\
 			PuzzleExtraInfo.cpp	\
+			SearchAlgo.cpp	\
+			ViewerSolution.cpp \
 			)
 
 OBJ		=	$(addprefix $(PATH_OBJ)/, $(SRC:.cpp=.o))
