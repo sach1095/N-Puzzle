@@ -20,13 +20,15 @@ void process_help()
 	std::cout << " - Uniform: Explores paths based on their cumulative cost without using a heuristic." << std::endl;
 	std::cout << " - Greedy: Uses only the heuristic to guide the search, disregarding past cost.\n" << std::endl;
 
+	std::cout << "--weight [nb] : (> 0) weight of the heuristic\n" << std::endl;
+
 	std::cout << "--heuristic [manhattan/euclidean/tiles]" << std::endl;
 
 	std::cout << " - Manhattan: Calculates the cost based on the Manhattan distance of each tile to its target position." << std::endl;
 	std::cout << " - Euclidean: Calculates the cost based on the Euclidean distance of each tile to its target position." << std::endl;
 	std::cout << " - Tiles: Counts the number of tiles that are not in their correct location.\n" << std::endl;
 
-	std::cout << "--viewer (optional) - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
+	std::cout << "--viewer: - Creates an HTML file to visualize the puzzle solving process on a web page." << std::endl;
 	exit(0);
 }
 
@@ -63,6 +65,12 @@ size_t Parse::getSizeline()
 {
 	return this->_sizeLine;
 }
+
+double Parse::getWeight()
+{
+	return this->_weight;
+}
+
 bool Parse::getviewer(){
 	return this->_viewer;
 }
@@ -219,6 +227,24 @@ void Parse::ParseArguments(char **inputArgs)
 			catch (const std::exception &e)
 			{
 				throw CustomError("Error: Bad argument for --size, " + args.front() + ", the value needs to be a number and bigger than 2.");
+			}
+		}
+		else if (args.front() == "--weight")
+		{
+			args.pop();
+			if (args.empty())
+				throw CustomError("Error: No given argument for --weight ");
+			try
+			{
+				double resultCast = std::stod(args.front());
+				if (resultCast <= 0.)
+					throw CustomError("");
+				this->_weight  = resultCast;
+				args.pop();
+			}
+			catch (const std::exception &e)
+			{
+				throw CustomError("Error: Bad argument for --weight (" + args.front() + "), the value needs to be a number and bigger than 0.");
 			}
 		}
 		else if (args.front() == "--solvable")
