@@ -10,7 +10,7 @@ std::tuple<size_t, size_t> get_2dPosition(size_t position, size_t sizeLine)
 }
 
 // https://en.wikipedia.org/wiki/Taxicab_geometry
-size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
+double manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
 {
 	double distance  = 0;
 	int x_pos,y_pos, x_sol, y_sol;
@@ -32,7 +32,7 @@ size_t manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine
 }
 
 // Euclidean_heuristic
-size_t euclidean_heuristic(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
+double euclidean_heuristic(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution)
 {
 	double distance  = 0;
 	int x_pos,y_pos, x_sol, y_sol;
@@ -52,7 +52,7 @@ size_t euclidean_heuristic(const std::vector<int>& puzzleNumbers, size_t sizeLin
 }
 
 // Count the number of tiles that are out of place.
-size_t tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution){
+double tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine, const std::vector<int>&vecSolution, const std::vector<size_t>& mapSolution){
 	(void)sizeLine;
 	(void)mapSolution;
 	size_t count = 0;

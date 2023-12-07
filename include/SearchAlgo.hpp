@@ -81,7 +81,7 @@ class SearchAlgo
 {
 public:
 	SearchAlgo() = delete;
-	SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
+	SearchAlgo(Algorithm algo_used, heuristic heuristic_used, double weight,
 			   std::vector<int> puzzleNumbers);
 
     bool Solve();
@@ -105,6 +105,7 @@ private:
     std::priority_queue<setIterator, std::vector<setIterator>> OpenedSet;
     setType		 ClosedSet;
 	const std::vector<int> &Solution;
+	const double Weight = 1.;
 };
 
 #endif

@@ -16,7 +16,7 @@ class PuzzleExtraInfo
 {
 public:
     PuzzleExtraInfo() = default;
-    PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic);
+    PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, double heuristic, double totalCost);
 
     friend std::ostream& operator<<(std::ostream& os, const PuzzleExtraInfo& puzzle);
     static const std::vector<int>& GetSolution();
@@ -34,8 +34,8 @@ public:
     SET_MACRO(PreviousPuzzle, const PuzzleExtraInfo*);
 	SET_MACRO(LastMove, Move);
     SET_MACRO(PathCost, size_t);
-	SET_MACRO(HeuristicValue, size_t);
-    SET_MACRO(TotalCost, size_t);
+	SET_MACRO(HeuristicValue, double);
+    SET_MACRO(TotalCost, double);
 
 private :
     static size_t			SizeLine;

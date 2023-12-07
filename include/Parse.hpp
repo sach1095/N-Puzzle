@@ -17,7 +17,7 @@
 class Parse {
 private:
 	size_t							_sizeLine;
-	double							_weight = 1;
+	double							_weight = 1.;
 	Algorithm						_algo = ASTAR;
 	heuristic						_heuristics = manhattan_distance;
 	bool							_isSolvable = true;
