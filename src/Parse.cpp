@@ -1,6 +1,6 @@
 #include "Parse.hpp"
 #include "Custom_Error.hpp"
-#include "GeneratorMap.cpp"
+#include "GeneratorMap.hpp"
 #include <filesystem>
 
 void process_help()

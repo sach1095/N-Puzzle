@@ -1,6 +1,4 @@
-#include <vector>
-#include <algorithm>
-#include <random>
+#include "GeneratorMap.hpp"
 
 // Swaps the empty tile (0) with one of its adjacent tiles in the puzzle.
 // This function is used for randomizing/shuffling the puzzle.

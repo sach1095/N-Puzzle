@@ -28,6 +28,7 @@ PATH_OBJ	=	obj
 
 # Source
 SRC		=	$(addprefix $(PATH_SRC)/, \
+			GeneratorMap.cpp \
 			SearchAlgo.cpp	\
 			Heuristics.cpp	\
 			Npuzzle.cpp		\
