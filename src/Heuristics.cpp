@@ -18,6 +18,8 @@ double manhattan_distance(const std::vector<int>& puzzleNumbers, size_t sizeLine
 
 	for (size_t i = 0; i < puzzleNumbers.size(); ++i)
 	{
+		if (puzzleNumbers[i] == 0)
+			continue;
 		// Get current position
 		x_pos = i / sizeLine;
 		y_pos = i % sizeLine;
@@ -40,6 +42,9 @@ double euclidean_heuristic(const std::vector<int>& puzzleNumbers, size_t sizeLin
 
 	for (double i = 0; i < puzzleNumbers.size(); ++i)
 	{
+		if (puzzleNumbers[i] == 0)
+			continue;
+
 		// Get current position
 		std::tie(x_pos, y_pos) = get_2dPosition(i, sizeLine);
 		// Get the solution position for the number
@@ -59,7 +64,10 @@ double tiles_out_of_place(const std::vector<int>& puzzleNumbers, size_t sizeLine
 
 	for (size_t i = 0; i < puzzleNumbers.size(); ++i)
 	{
-		if (puzzleNumbers[i] != 0 && puzzleNumbers.at(i) != vecSolution.at(i))
+		if (puzzleNumbers[i] == 0)
+			continue;
+
+		if (puzzleNumbers.at(i) != vecSolution.at(i))
 			count++;
 	}
 
