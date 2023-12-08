@@ -237,14 +237,14 @@ void Parse::ParseArguments(char **inputArgs)
 			try
 			{
 				double resultCast = std::stod(args.front());
-				if (resultCast <= 0.)
+				if (resultCast < 1.)
 					throw CustomError("");
 				this->_weight  = resultCast;
 				args.pop();
 			}
 			catch (const std::exception &e)
 			{
-				throw CustomError("Error: Bad argument for --weight (" + args.front() + "), the value needs to be a number and bigger than 0.");
+				throw CustomError("Error: Bad argument for --weight (" + args.front() + "), the value needs to be greater than or equal to 1.");
 			}
 		}
 		else if (args.front() == "--solvable")
@@ -321,6 +321,12 @@ void Parse::ParseArguments(char **inputArgs)
 		if (this->_sizeLine < 2)
 			throw CustomError("Error: Bad argument for --size, the minimum for a map size is 3");
 		this->_parsedContent = makePuzzle(this->_sizeLine, this->_isSolvable);
+	}
+	// Limit the max size of a puzzle
+	if (this->_sizeLine > 7)
+	{
+		throw CustomError("The program cannot handle this puzzle size (" + std::to_string(this->_sizeLine) + ") without dying a horrible, horrible death.\n"
+						  + "Max size handled : 7.");
 	}
 	this->verifyPuzzle();
 }
