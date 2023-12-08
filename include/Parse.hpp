@@ -17,6 +17,7 @@
 class Parse {
 private:
 	size_t							_sizeLine;
+	double							_weight = 1.;
 	Algorithm						_algo = ASTAR;
 	heuristic						_heuristics = manhattan_distance;
 	bool							_isSolvable = true;
@@ -36,6 +37,7 @@ public:
 	void showParsedContent();
 	void verifyPuzzle();
 	size_t getSizeline();
+	double getWeight();
 	Algorithm getAlgoSelected();
 	void setHeuristicFunction(heuristic func);
 	heuristic getHeuristicFunction();

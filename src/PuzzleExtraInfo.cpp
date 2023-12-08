@@ -5,9 +5,9 @@
 // Initialize static var
 size_t PuzzleExtraInfo::SizeLine = 0;
 
-PuzzleExtraInfo::PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, size_t heuristic) :
+PuzzleExtraInfo::PuzzleExtraInfo(const PuzzleExtraInfo* previousPuzzle, Move lastMove, size_t pathCost, double heuristic, double totalCost) :
 			   PreviousPuzzle(previousPuzzle), LastMove(lastMove),
-			   PathCost(pathCost), HeuristicValue(heuristic), TotalCost(pathCost + heuristic)
+			   PathCost(pathCost), HeuristicValue(heuristic), TotalCost(totalCost)
 {
 	if (!PuzzleExtraInfo::SizeLine)
 		throw CustomError("Set Puzzle::SizeLine before using Puzzle class");

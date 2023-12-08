@@ -1,15 +1,17 @@
 
 #include "SearchAlgo.hpp"
 
-SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used,
-                       std::vector<int> puzzleNumbers)
-                     : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used), Solution(PuzzleExtraInfo::GetSolution())
+SearchAlgo::SearchAlgo(Algorithm algo_used, heuristic heuristic_used, double weight,
+					   std::vector<int> puzzleNumbers)
+                     : AlgorithmUsed(algo_used), HeuristicFunction(heuristic_used),
+					   Solution(PuzzleExtraInfo::GetSolution()), Weight(weight)
 {
 	// Find zero
 	size_t positionZero = std::distance(puzzleNumbers.begin(), std::find(puzzleNumbers.begin(), puzzleNumbers.end(), 0));
 
 	// Create the init puzzle
-    this->InitPuzzle = PuzzleExtraInfo(nullptr, NONE, 0, this->HeuristicFunction(puzzleNumbers,PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetSolution(), PuzzleExtraInfo::GetVecSolution()));
+	size_t initHeuristic = this->HeuristicFunction(puzzleNumbers,PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetSolution(), PuzzleExtraInfo::GetVecSolution());
+    this->InitPuzzle = PuzzleExtraInfo(nullptr, NONE, 0, initHeuristic, this->Weight * initHeuristic);
 	this->InitVecNumbers = {puzzleNumbers, this->Hasher.Hash(puzzleNumbers), positionZero};
 
 	// Reserve memory
@@ -212,11 +214,12 @@ bool SearchAlgo::Solve()
 			// If not in the set, add it
 			if (foundClosedSet == this->ClosedSet.end())
 			{
-				size_t neighborHeuristic = (this->AlgorithmUsed == UNIFORM_COST) ?
-											0 :
+				double neighborHeuristic = (this->AlgorithmUsed == UNIFORM_COST) ?
+											0. :
 											this->HeuristicFunction(neighbor.VecNumbers, PuzzleExtraInfo::GetSizeLine(), PuzzleExtraInfo::GetSolution(), PuzzleExtraInfo::GetVecSolution());
 				// Insert element
-				auto [it, success] = this->ClosedSet.insert({neighbor, PuzzleExtraInfo(&valuePuzzle, lastMove[i], pathCostUpdated, neighborHeuristic)});
+				auto [it, success] = this->ClosedSet.insert({neighbor,
+												PuzzleExtraInfo(&valuePuzzle, lastMove[i], pathCostUpdated, neighborHeuristic, pathCostUpdated + this->Weight * neighborHeuristic)});
 				this->OpenedSet.emplace(it);
 				sizeClosedSet++;
 			}
@@ -230,7 +233,7 @@ bool SearchAlgo::Solve()
 				mutableSet.SetLastMove(lastMove[i]);
 				// Update costs
 				mutableSet.SetPathCost(pathCostUpdated);
-				mutableSet.SetTotalCost(mutableSet.GetPathCost() + mutableSet.GetHeuristicValue());
+				mutableSet.SetTotalCost(mutableSet.GetPathCost() + this->Weight * mutableSet.GetHeuristicValue());
 				// Add it back to the OpenSet
 				this->OpenedSet.emplace(foundClosedSet);
 			}
