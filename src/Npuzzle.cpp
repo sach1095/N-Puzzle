@@ -10,16 +10,18 @@ int main(int ac, char **av)
 	{
 		Parse parser(ac, av);
 
+		size_t sizePuzzle = parser.getSizeline();
+
 		// Init Puzzle size
-		PuzzleExtraInfo::InitSizeLine(parser.getSizeline());
+		PuzzleExtraInfo::InitSizeLine(sizePuzzle);
 
 		// Verification of the solvability of the map
-		if (isNotSolvable(parser.getParsedContent(), parser.getSizeline()))
+		if (isNotSolvable(parser.getParsedContent(), sizePuzzle))
 			throw CustomError("Error: this map is not solvable.");
 
 		auto algo = SearchAlgo(parser.getAlgoSelected(), parser.getHeuristicFunction(), parser.getWeight(), parser.getParsedContent());
 		if (algo.Solve() && parser.getviewer())
-			reconstructAndDisplayPath(parser.getParsedContent(), parser.getSizeline(), algo.getReverseMoveSolution());
+			reconstructAndDisplayPath(parser.getParsedContent(), sizePuzzle, algo.getReverseMoveSolution());
 	}
 	catch(const CustomError& e)
 	{
